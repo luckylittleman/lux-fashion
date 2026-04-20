@@ -106,7 +106,7 @@ const Checkout = () => {
 const styles = {
   container: { padding: '40px' },
   title: { fontSize: '22px', fontWeight: 'bold', color: '#333', marginBottom: '28px' },
-  layout: { display: 'grid', gridTemplateColumns: '1fr 320px', gap: '32px' },
+  layout: { display: 'flex', flexDirection: 'column', gap: '32px' },
   form: { display: 'flex', flexDirection: 'column', gap: '16px' },
   sectionTitle: { fontSize: '17px', fontWeight: 'bold', color: '#333', marginBottom: '8px' },
   formGroup: { display: 'flex', flexDirection: 'column', gap: '6px' },
