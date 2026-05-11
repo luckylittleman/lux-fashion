@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import axios from 'axios';
 
 const OrderSuccess = () => {
@@ -19,145 +20,214 @@ const OrderSuccess = () => {
       });
   }, [id]);
 
-  if (loading) return <p style={styles.loading}>Loading...</p>;
+  if (loading) return (
+    <div style={styles.loading}>
+      <p style={styles.loadingText}>Loading...</p>
+    </div>
+  );
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <div style={styles.icon}>✓</div>
-        <h2 style={styles.title}>Order placed successfully!</h2>
+    <div style={styles.page}>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        style={styles.card}
+      >
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          style={styles.iconWrapper}
+        >
+          <span style={styles.icon}>✓</span>
+        </motion.div>
+
+        <p style={styles.tag}>ORDER CONFIRMED</p>
+        <h1 style={styles.title}>Thank you, {order?.full_name?.split(' ')[0]}!</h1>
         <p style={styles.subtitle}>
-          Thank you {order?.full_name}, your order has been received.
+          Your order #{order?.id} has been placed successfully.
+          We'll be in touch shortly.
         </p>
+
         <div style={styles.details}>
           <div style={styles.detailRow}>
-            <span style={styles.detailLabel}>Order ID</span>
+            <span style={styles.detailLabel}>ORDER ID</span>
             <span style={styles.detailValue}>#{order?.id}</span>
           </div>
+          <div style={styles.detailDivider} />
           <div style={styles.detailRow}>
-            <span style={styles.detailLabel}>Phone</span>
+            <span style={styles.detailLabel}>PHONE</span>
             <span style={styles.detailValue}>{order?.phone}</span>
           </div>
+          <div style={styles.detailDivider} />
           <div style={styles.detailRow}>
-            <span style={styles.detailLabel}>Delivery address</span>
+            <span style={styles.detailLabel}>ADDRESS</span>
             <span style={styles.detailValue}>{order?.address}, {order?.county}</span>
           </div>
+          <div style={styles.detailDivider} />
           <div style={styles.detailRow}>
-            <span style={styles.detailLabel}>Total paid</span>
+            <span style={styles.detailLabel}>STATUS</span>
+            <span style={styles.statusBadge}>{order?.status?.toUpperCase()}</span>
+          </div>
+          <div style={styles.detailDivider} />
+          <div style={styles.detailRow}>
+            <span style={styles.detailLabel}>TOTAL PAID</span>
             <span style={styles.detailValue}>
               KSh {Number(order?.total_price).toLocaleString()}
             </span>
           </div>
-          <div style={styles.detailRow}>
-            <span style={styles.detailLabel}>Status</span>
-            <span style={styles.badge}>{order?.status}</span>
-          </div>
         </div>
+
         <div style={styles.items}>
-          <h3 style={styles.itemsTitle}>Items ordered</h3>
+          <p style={styles.itemsTag}>ITEMS ORDERED</p>
           {order?.items.map((item, index) => (
             <div key={index} style={styles.item}>
-              <span>Product #{item.product} x{item.quantity}</span>
-              <span>KSh {Number(item.price * item.quantity).toLocaleString()}</span>
+              <span style={styles.itemName}>Product #{item.product} x{item.quantity}</span>
+              <span style={styles.itemPrice}>
+                KSh {Number(item.price * item.quantity).toLocaleString()}
+              </span>
             </div>
           ))}
         </div>
-        <Link to='/' style={styles.homeBtn}>Continue shopping</Link>
-      </div>
+
+        <Link to='/' style={styles.homeBtn}>CONTINUE SHOPPING →</Link>
+      </motion.div>
     </div>
   );
 };
 
 const styles = {
-  container: {
-    padding: '60px 40px',
-    display: 'flex',
-    justifyContent: 'center',
-  },
-  card: {
-    backgroundColor: '#fff',
-    border: '1px solid #eee',
-    borderRadius: '12px',
-    padding: '40px',
-    maxWidth: '520px',
-    width: '100%',
-    textAlign: 'center',
-  },
-  icon: {
-    width: '60px',
-    height: '60px',
-    borderRadius: '50%',
-    backgroundColor: '#2ecc71',
-    color: '#fff',
-    fontSize: '28px',
+  page: {
+    backgroundColor: '#0a0a0a',
+    minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    margin: '0 auto 20px',
+    padding: '60px 40px',
+  },
+  loading: {
+    backgroundColor: '#0a0a0a',
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    color: '#555',
+    fontSize: '14px',
+    letterSpacing: '2px',
+  },
+  card: {
+    backgroundColor: '#111',
+    border: '1px solid #1a1a1a',
+    padding: '60px',
+    maxWidth: '560px',
+    width: '100%',
+    textAlign: 'center',
+  },
+  iconWrapper: {
+    width: '64px',
+    height: '64px',
+    borderRadius: '50%',
+    backgroundColor: '#2ecc71',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '0 auto 28px',
+  },
+  icon: {
+    fontSize: '28px',
+    color: '#fff',
+    fontWeight: '700',
+  },
+  tag: {
+    fontSize: '11px',
+    letterSpacing: '4px',
+    color: '#2ecc71',
+    marginBottom: '16px',
   },
   title: {
-    fontSize: '22px',
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: '8px',
+    fontSize: '32px',
+    fontWeight: '900',
+    color: '#fff',
+    marginBottom: '12px',
+    letterSpacing: '-0.5px',
   },
   subtitle: {
     fontSize: '14px',
-    color: '#777',
-    marginBottom: '28px',
+    color: '#666',
+    lineHeight: 1.8,
+    marginBottom: '40px',
   },
   details: {
-    backgroundColor: '#f9f9f9',
-    borderRadius: '8px',
-    padding: '16px 20px',
-    marginBottom: '24px',
+    backgroundColor: '#0a0a0a',
+    border: '1px solid #1a1a1a',
+    padding: '24px',
+    marginBottom: '32px',
     textAlign: 'left',
   },
   detailRow: {
     display: 'flex',
     justifyContent: 'space-between',
-    fontSize: '14px',
-    padding: '6px 0',
-    borderBottom: '1px solid #eee',
+    alignItems: 'center',
+    padding: '8px 0',
   },
-  detailLabel: { color: '#999' },
-  detailValue: { color: '#333', fontWeight: '500' },
-  badge: {
-    backgroundColor: '#f0f9f4',
-    color: '#2ecc71',
-    padding: '2px 10px',
-    borderRadius: '20px',
+  detailDivider: {
+    height: '1px',
+    backgroundColor: '#1a1a1a',
+  },
+  detailLabel: {
+    fontSize: '10px',
+    letterSpacing: '3px',
+    color: '#555',
+  },
+  detailValue: {
     fontSize: '13px',
+    color: '#fff',
     fontWeight: '500',
-    textTransform: 'capitalize',
+  },
+  statusBadge: {
+    fontSize: '10px',
+    letterSpacing: '2px',
+    color: '#f39c12',
+    border: '1px solid #f39c12',
+    padding: '3px 10px',
   },
   items: {
     textAlign: 'left',
-    marginBottom: '28px',
+    marginBottom: '40px',
   },
-  itemsTitle: {
-    fontSize: '15px',
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: '12px',
+  itemsTag: {
+    fontSize: '11px',
+    letterSpacing: '4px',
+    color: '#555',
+    marginBottom: '16px',
   },
   item: {
     display: 'flex',
     justifyContent: 'space-between',
     fontSize: '13px',
-    color: '#555',
-    padding: '6px 0',
-    borderBottom: '1px solid #eee',
+    color: '#888',
+    padding: '10px 0',
+    borderBottom: '1px solid #1a1a1a',
   },
-  loading: { padding: '40px', textAlign: 'center', color: '#999' },
+  itemName: {
+    color: '#ccc',
+  },
+  itemPrice: {
+    color: '#fff',
+    fontWeight: '500',
+  },
   homeBtn: {
     display: 'inline-block',
-    backgroundColor: '#333',
-    color: '#fff',
-    padding: '12px 28px',
-    borderRadius: '6px',
-    fontSize: '14px',
-    fontWeight: '500',
+    backgroundColor: '#fff',
+    color: '#000',
+    padding: '14px 40px',
+    fontSize: '12px',
+    fontWeight: '700',
+    letterSpacing: '2px',
+    borderRadius: '2px',
   },
 };
 

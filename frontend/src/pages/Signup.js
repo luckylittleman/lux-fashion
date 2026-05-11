@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 
 const Signup = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const [method, setMethod] = useState('email');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -23,11 +25,14 @@ const Signup = () => {
     e.preventDefault();
     setError('');
 
-    if (!form.email && !form.phone) {
-      setError('Please provide either an email or phone number');
+    if (method === 'email' && !form.email) {
+      setError('Please enter your email address');
       return;
     }
-
+    if (method === 'phone' && !form.phone) {
+      setError('Please enter your phone number');
+      return;
+    }
     if (form.password !== form.confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -35,13 +40,9 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      const data = {
-        full_name: form.full_name,
-        password: form.password,
-      };
-      if (form.email) data.email = form.email;
-      if (form.phone) data.phone = form.phone;
-
+      const data = { full_name: form.full_name, password: form.password };
+      if (method === 'email') data.email = form.email;
+      if (method === 'phone') data.phone = form.phone;
       await register(data);
       navigate('/');
     } catch (err) {
@@ -57,16 +58,68 @@ const Signup = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Create an account</h2>
-        <p style={styles.subtitle}>Join Lux Fashion today</p>
+    <div style={styles.page}>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        style={styles.card}
+      >
+        <p style={styles.tag}>JOIN LUX FASHION</p>
+        <h2 style={styles.title}>Create Account</h2>
+        <p style={styles.subtitle}>Sign up and start shopping today</p>
 
-        {error && <div style={styles.error}>{error}</div>}
+        <div style={styles.toggle}>
+          <button
+            style={{
+              ...styles.toggleBtn,
+              ...(method === 'email' ? styles.toggleActive : {}),
+            }}
+            onClick={() => setMethod('email')}
+            type='button'
+          >
+            EMAIL
+          </button>
+          <button
+            style={{
+              ...styles.toggleBtn,
+              ...(method === 'phone' ? styles.toggleActive : {}),
+            }}
+            onClick={() => setMethod('phone')}
+            type='button'
+          >
+            PHONE
+          </button>
+        </div>
+
+        {error && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={styles.error}
+          >
+            {error}
+          </motion.div>
+        )}
 
         <form onSubmit={handleSubmit} style={styles.form}>
           <div style={styles.formGroup}>
-            <label style={styles.label}>Full name</label>
+            <label style={styles.label}>
+              {method === 'email' ? 'EMAIL ADDRESS' : 'PHONE NUMBER'}
+            </label>
+            <input
+              style={styles.input}
+              type={method === 'email' ? 'email' : 'text'}
+              name={method === 'email' ? 'email' : 'phone'}
+              placeholder={method === 'email' ? 'john@email.com' : '07XXXXXXXX'}
+              value={method === 'email' ? form.email : form.phone}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div style={styles.formGroup}>
+            <label style={styles.label}>FULL NAME</label>
             <input
               style={styles.input}
               type='text'
@@ -77,30 +130,9 @@ const Signup = () => {
               required
             />
           </div>
+
           <div style={styles.formGroup}>
-            <label style={styles.label}>Email address <span style={styles.optional}>(optional if phone provided)</span></label>
-            <input
-              style={styles.input}
-              type='email'
-              name='email'
-              placeholder='john@email.com'
-              value={form.email}
-              onChange={handleChange}
-            />
-          </div>
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Phone number <span style={styles.optional}>(optional if email provided)</span></label>
-            <input
-              style={styles.input}
-              type='text'
-              name='phone'
-              placeholder='07XXXXXXXX'
-              value={form.phone}
-              onChange={handleChange}
-            />
-          </div>
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Password</label>
+            <label style={styles.label}>PASSWORD</label>
             <input
               style={styles.input}
               type='password'
@@ -111,8 +143,9 @@ const Signup = () => {
               required
             />
           </div>
+
           <div style={styles.formGroup}>
-            <label style={styles.label}>Confirm password</label>
+            <label style={styles.label}>CONFIRM PASSWORD</label>
             <input
               style={styles.input}
               type='password'
@@ -123,12 +156,13 @@ const Signup = () => {
               required
             />
           </div>
+
           <button
             type='submit'
             style={styles.btn}
             disabled={loading}
           >
-            {loading ? 'Creating account...' : 'Create account'}
+            {loading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT →'}
           </button>
         </form>
 
@@ -136,94 +170,121 @@ const Signup = () => {
           Already have an account?{' '}
           <Link to='/login' style={styles.link}>Sign in</Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 };
 
 const styles = {
-  container: {
-    minHeight: '80vh',
+  page: {
+    backgroundColor: '#0a0a0a',
+    minHeight: '100vh',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     padding: '40px',
   },
   card: {
-    backgroundColor: '#fff',
-    border: '1px solid #eee',
-    borderRadius: '12px',
-    padding: '40px',
+    backgroundColor: '#111',
+    border: '1px solid #1a1a1a',
+    padding: '48px',
     width: '100%',
     maxWidth: '420px',
   },
+  tag: {
+    fontSize: '11px',
+    letterSpacing: '4px',
+    color: '#555',
+    marginBottom: '12px',
+  },
   title: {
-    fontSize: '22px',
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: '6px',
+    fontSize: '32px',
+    fontWeight: '900',
+    color: '#fff',
+    marginBottom: '8px',
+    letterSpacing: '-0.5px',
   },
   subtitle: {
     fontSize: '14px',
-    color: '#999',
+    color: '#555',
+    marginBottom: '32px',
+  },
+  toggle: {
+    display: 'flex',
+    border: '1px solid #222',
+    borderRadius: '2px',
+    overflow: 'hidden',
     marginBottom: '28px',
   },
+  toggleBtn: {
+    flex: 1,
+    padding: '12px',
+    border: 'none',
+    backgroundColor: '#0a0a0a',
+    color: '#555',
+    fontSize: '11px',
+    letterSpacing: '2px',
+    cursor: 'pointer',
+  },
+  toggleActive: {
+    backgroundColor: '#fff',
+    color: '#000',
+    fontWeight: '700',
+  },
   error: {
-    backgroundColor: '#fef2f2',
+    backgroundColor: '#1a0a0a',
     color: '#e74c3c',
-    padding: '10px 14px',
-    borderRadius: '6px',
+    padding: '12px 16px',
     fontSize: '13px',
-    marginBottom: '16px',
-    border: '1px solid #fecaca',
+    marginBottom: '20px',
+    border: '1px solid #2a0a0a',
+    letterSpacing: '0.5px',
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px',
+    gap: '20px',
   },
   formGroup: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '6px',
+    gap: '8px',
   },
   label: {
-    fontSize: '13px',
+    fontSize: '11px',
+    letterSpacing: '2px',
     color: '#555',
   },
-  optional: {
-    fontSize: '11px',
-    color: '#aaa',
-  },
   input: {
-    padding: '10px 14px',
-    borderRadius: '6px',
-    border: '1px solid #ddd',
+    padding: '14px 16px',
+    backgroundColor: '#0a0a0a',
+    border: '1px solid #222',
     fontSize: '14px',
-    color: '#333',
+    color: '#fff',
     outline: 'none',
+    borderRadius: '2px',
   },
   btn: {
-    backgroundColor: '#333',
-    color: '#fff',
-    padding: '12px',
-    borderRadius: '6px',
+    backgroundColor: '#fff',
+    color: '#000',
+    padding: '14px',
     border: 'none',
-    fontSize: '15px',
-    fontWeight: '500',
+    fontSize: '12px',
+    fontWeight: '700',
+    letterSpacing: '2px',
     cursor: 'pointer',
     marginTop: '8px',
+    borderRadius: '2px',
   },
   footer: {
     textAlign: 'center',
-    fontSize: '14px',
-    color: '#777',
-    marginTop: '24px',
+    fontSize: '13px',
+    color: '#555',
+    marginTop: '28px',
   },
   link: {
-    color: '#333',
-    fontWeight: '500',
-    textDecoration: 'underline',
+    color: '#fff',
+    fontWeight: '600',
   },
 };
 

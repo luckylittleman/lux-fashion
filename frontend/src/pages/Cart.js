@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 
 const Cart = () => {
@@ -7,23 +8,46 @@ const Cart = () => {
   if (cart.length === 0) {
     return (
       <div style={styles.empty}>
-        <h2 style={styles.emptyTitle}>Your cart is empty</h2>
-        <p style={styles.emptyText}>Looks like you haven't added anything yet.</p>
-        <Link to='/shop' style={styles.shopBtn}>Browse products</Link>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <p style={styles.emptyTag}>YOUR CART</p>
+          <h2 style={styles.emptyTitle}>Your cart is empty</h2>
+          <p style={styles.emptyText}>Looks like you haven't added anything yet.</p>
+          <Link to='/shop' style={styles.shopBtn}>Browse Products →</Link>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Your cart</h2>
-      <div style={styles.layout}>
+    <div style={styles.page}>
+      <div style={styles.header}>
+        <p style={styles.headerTag}>YOUR CART</p>
+        <h1 style={styles.headerTitle}>Shopping Cart</h1>
+      </div>
+
+      <div style={styles.container}>
         <div style={styles.items}>
-          {cart.map(item => (
-            <div key={item.id} style={styles.item}>
+          {cart.map((item, i) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: i * 0.1 }}
+              style={styles.item}
+            >
+              <div style={styles.itemImg}>
+                {item.image
+                  ? <img src={item.image} alt={item.name} style={styles.img} />
+                  : <div style={styles.noImg}>No image</div>
+                }
+              </div>
               <div style={styles.itemInfo}>
-                <p style={styles.itemName}>{item.name}</p>
-                <p style={styles.itemCategory}>{item.category.name}</p>
+                <p style={styles.itemCat}>{item.category.name.toUpperCase()}</p>
+                <h3 style={styles.itemName}>{item.name}</h3>
                 <p style={styles.itemPrice}>KSh {Number(item.price).toLocaleString()}</p>
               </div>
               <div style={styles.itemActions}>
@@ -31,7 +55,7 @@ const Cart = () => {
                   <button
                     style={styles.qtyBtn}
                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                  >-</button>
+                  >−</button>
                   <span style={styles.qtyNum}>{item.quantity}</span>
                   <button
                     style={styles.qtyBtn}
@@ -44,14 +68,21 @@ const Cart = () => {
                 <button
                   style={styles.removeBtn}
                   onClick={() => removeFromCart(item.id)}
-                >Remove</button>
+                >
+                  REMOVE
+                </button>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
-        <div style={styles.summary}>
-          <h3 style={styles.summaryTitle}>Order summary</h3>
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          style={styles.summary}
+        >
+          <p style={styles.summaryTag}>ORDER SUMMARY</p>
           <div style={styles.summaryRow}>
             <span>Subtotal</span>
             <span>KSh {Number(totalPrice).toLocaleString()}</span>
@@ -60,73 +91,236 @@ const Cart = () => {
             <span>Delivery</span>
             <span>KSh 200</span>
           </div>
+          <div style={styles.summaryDivider} />
           <div style={styles.summaryTotal}>
             <span>Total</span>
             <span>KSh {Number(totalPrice + 200).toLocaleString()}</span>
           </div>
           <Link to='/checkout' style={styles.checkoutBtn}>
-            Proceed to checkout →
+            Proceed to Checkout →
           </Link>
-        </div>
+          <Link to='/shop' style={styles.continueBtn}>
+            ← Continue Shopping
+          </Link>
+        </motion.div>
       </div>
     </div>
   );
 };
 
 const styles = {
-  container: { padding: '40px' },
-  title: { fontSize: '22px', fontWeight: 'bold', color: '#333', marginBottom: '28px' },
-  layout: { display: 'grid', gridTemplateColumns: '1fr 320px', gap: '32px' },
-  items: { display: 'flex', flexDirection: 'column', gap: '16px' },
+  page: {
+    backgroundColor: '#0a0a0a',
+    minHeight: '100vh',
+  },
+  header: {
+    padding: '60px 80px 40px',
+    borderBottom: '1px solid #1a1a1a',
+  },
+  headerTag: {
+    fontSize: '11px',
+    letterSpacing: '4px',
+    color: '#555',
+    marginBottom: '12px',
+  },
+  headerTitle: {
+    fontSize: '48px',
+    fontWeight: '900',
+    color: '#fff',
+    letterSpacing: '-1px',
+  },
+  container: {
+    padding: '40px 80px 80px',
+    display: 'grid',
+    gridTemplateColumns: '1fr 340px',
+    gap: '48px',
+    alignItems: 'start',
+  },
+  items: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1px',
+    backgroundColor: '#1a1a1a',
+    border: '1px solid #1a1a1a',
+  },
   item: {
-    backgroundColor: '#fff', border: '1px solid #eee',
-    borderRadius: '10px', padding: '16px 20px',
-    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+    display: 'grid',
+    gridTemplateColumns: '100px 1fr auto',
+    gap: '24px',
+    alignItems: 'center',
+    padding: '24px',
+    backgroundColor: '#0a0a0a',
   },
-  itemInfo: { display: 'flex', flexDirection: 'column', gap: '4px' },
-  itemName: { fontSize: '15px', fontWeight: '600', color: '#333' },
-  itemCategory: { fontSize: '12px', color: '#999', textTransform: 'uppercase' },
-  itemPrice: { fontSize: '14px', color: '#555' },
-  itemActions: { display: 'flex', alignItems: 'center', gap: '16px' },
-  quantity: { display: 'flex', alignItems: 'center', gap: '10px' },
+  itemImg: {
+    width: '100px',
+    height: '120px',
+    backgroundColor: '#1a1a1a',
+    borderRadius: '2px',
+    overflow: 'hidden',
+  },
+  img: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+  noImg: {
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '11px',
+    color: '#444',
+    letterSpacing: '1px',
+  },
+  itemInfo: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
+  },
+  itemCat: {
+    fontSize: '10px',
+    letterSpacing: '3px',
+    color: '#555',
+  },
+  itemName: {
+    fontSize: '15px',
+    fontWeight: '600',
+    color: '#fff',
+  },
+  itemPrice: {
+    fontSize: '13px',
+    color: '#888',
+  },
+  itemActions: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    gap: '12px',
+  },
+  quantity: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    border: '1px solid #222',
+    padding: '6px 12px',
+  },
   qtyBtn: {
-    width: '28px', height: '28px', borderRadius: '50%',
-    border: '1px solid #ddd', backgroundColor: '#fff',
-    cursor: 'pointer', fontSize: '16px',
+    background: 'none',
+    border: 'none',
+    color: '#fff',
+    fontSize: '16px',
+    cursor: 'pointer',
+    padding: '0 4px',
   },
-  qtyNum: { fontSize: '15px', fontWeight: '500', minWidth: '20px', textAlign: 'center' },
-  itemTotal: { fontSize: '15px', fontWeight: 'bold', color: '#333', minWidth: '80px', textAlign: 'right' },
+  qtyNum: {
+    fontSize: '14px',
+    color: '#fff',
+    minWidth: '20px',
+    textAlign: 'center',
+  },
+  itemTotal: {
+    fontSize: '15px',
+    fontWeight: '700',
+    color: '#fff',
+  },
   removeBtn: {
-    backgroundColor: 'transparent', border: 'none',
-    color: '#e74c3c', fontSize: '13px', cursor: 'pointer',
+    background: 'none',
+    border: 'none',
+    color: '#444',
+    fontSize: '10px',
+    letterSpacing: '2px',
+    cursor: 'pointer',
+    padding: '0',
   },
   summary: {
-    backgroundColor: '#fff', border: '1px solid #eee',
-    borderRadius: '10px', padding: '24px',
-    height: 'fit-content',
+    backgroundColor: '#111',
+    border: '1px solid #1a1a1a',
+    padding: '32px',
   },
-  summaryTitle: { fontSize: '17px', fontWeight: 'bold', color: '#333', marginBottom: '20px' },
+  summaryTag: {
+    fontSize: '11px',
+    letterSpacing: '4px',
+    color: '#555',
+    marginBottom: '24px',
+  },
   summaryRow: {
-    display: 'flex', justifyContent: 'space-between',
-    fontSize: '14px', color: '#555', marginBottom: '12px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    fontSize: '13px',
+    color: '#888',
+    marginBottom: '12px',
+  },
+  summaryDivider: {
+    height: '1px',
+    backgroundColor: '#1a1a1a',
+    margin: '16px 0',
   },
   summaryTotal: {
-    display: 'flex', justifyContent: 'space-between',
-    fontSize: '16px', fontWeight: 'bold', color: '#333',
-    borderTop: '1px solid #eee', paddingTop: '12px', marginTop: '8px', marginBottom: '20px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    fontSize: '16px',
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: '28px',
   },
   checkoutBtn: {
-    display: 'block', textAlign: 'center',
-    backgroundColor: '#333', color: '#fff',
-    padding: '12px', borderRadius: '6px',
-    fontSize: '14px', fontWeight: '500',
+    display: 'block',
+    textAlign: 'center',
+    backgroundColor: '#fff',
+    color: '#000',
+    padding: '14px',
+    fontSize: '12px',
+    fontWeight: '700',
+    letterSpacing: '2px',
+    marginBottom: '12px',
+    borderRadius: '2px',
   },
-  empty: { padding: '80px 40px', textAlign: 'center' },
-  emptyTitle: { fontSize: '22px', fontWeight: 'bold', color: '#333', marginBottom: '8px' },
-  emptyText: { fontSize: '14px', color: '#999', marginBottom: '24px' },
+  continueBtn: {
+    display: 'block',
+    textAlign: 'center',
+    backgroundColor: 'transparent',
+    color: '#555',
+    padding: '14px',
+    fontSize: '12px',
+    letterSpacing: '1px',
+    border: '1px solid #222',
+    borderRadius: '2px',
+  },
+  empty: {
+    backgroundColor: '#0a0a0a',
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    padding: '40px',
+  },
+  emptyTag: {
+    fontSize: '11px',
+    letterSpacing: '4px',
+    color: '#555',
+    marginBottom: '16px',
+  },
+  emptyTitle: {
+    fontSize: '36px',
+    fontWeight: '900',
+    color: '#fff',
+    marginBottom: '12px',
+  },
+  emptyText: {
+    fontSize: '14px',
+    color: '#555',
+    marginBottom: '32px',
+  },
   shopBtn: {
-    backgroundColor: '#333', color: '#fff',
-    padding: '10px 24px', borderRadius: '6px', fontSize: '14px',
+    backgroundColor: '#fff',
+    color: '#000',
+    padding: '14px 32px',
+    fontSize: '12px',
+    fontWeight: '700',
+    letterSpacing: '2px',
+    borderRadius: '2px',
   },
 };
 

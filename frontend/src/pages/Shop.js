@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import axios from 'axios';
 import ProductCard from '../components/ProductCard';
 
@@ -33,73 +34,141 @@ const Shop = () => {
   }, [activeCategory]);
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>All products</h2>
-      <div style={styles.filters}>
-        {['all', 'men', 'women'].map(cat => (
-          <button
-            key={cat}
-            style={{
-              ...styles.filterBtn,
-              ...(activeCategory === cat ? styles.activeFilter : {})
-            }}
-            onClick={() => setActiveCategory(cat)}
-          >
-            {cat.charAt(0).toUpperCase() + cat.slice(1)}
-          </button>
-        ))}
+    <div style={styles.page}>
+
+      {/* Page Header */}
+      <div style={styles.header}>
+        <motion.p
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          style={styles.headerTag}
+        >
+          EXPLORE OUR COLLECTION
+        </motion.p>
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          style={styles.headerTitle}
+        >
+          All Products
+        </motion.h1>
       </div>
-      {loading
-        ? <p style={styles.loading}>Loading products...</p>
-        : products.length === 0
-          ? <p style={styles.loading}>No products found.</p>
-          : <div style={styles.grid}>
-              {products.map(product => (
-                <ProductCard key={product.id} product={product} />
+
+      <div style={styles.container}>
+        {/* Filters */}
+        <div style={styles.filters}>
+          {['all', 'men', 'women'].map(cat => (
+            <button
+              key={cat}
+              style={{
+                ...styles.filterBtn,
+                ...(activeCategory === cat ? styles.filterActive : {}),
+              }}
+              onClick={() => setActiveCategory(cat)}
+            >
+              {cat === 'all' ? 'ALL' : cat.toUpperCase()}
+            </button>
+          ))}
+        </div>
+
+        {/* Products */}
+        {loading ? (
+          <div style={styles.loadingContainer}>
+            <p style={styles.loading}>Loading products...</p>
+          </div>
+        ) : products.length === 0 ? (
+          <div style={styles.loadingContainer}>
+            <p style={styles.loading}>No products found.</p>
+          </div>
+        ) : (
+          <>
+            <p style={styles.count}>{products.length} products</p>
+            <div style={styles.grid}>
+              {products.map((product, i) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: i * 0.08 }}
+                >
+                  <ProductCard product={product} />
+                </motion.div>
               ))}
             </div>
-      }
+          </>
+        )}
+      </div>
     </div>
   );
 };
 
 const styles = {
-  container: {
-    padding: '40px',
+  page: {
+    backgroundColor: '#0a0a0a',
+    minHeight: '100vh',
   },
-  title: {
-    fontSize: '22px',
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: '20px',
+  header: {
+    padding: '60px 80px 40px',
+    borderBottom: '1px solid #1a1a1a',
+  },
+  headerTag: {
+    fontSize: '11px',
+    letterSpacing: '4px',
+    color: '#555',
+    marginBottom: '12px',
+  },
+  headerTitle: {
+    fontSize: '48px',
+    fontWeight: '900',
+    color: '#fff',
+    letterSpacing: '-1px',
+  },
+  container: {
+    padding: '40px 80px 80px',
   },
   filters: {
     display: 'flex',
-    gap: '10px',
-    marginBottom: '28px',
+    gap: '8px',
+    marginBottom: '32px',
   },
   filterBtn: {
-    padding: '8px 20px',
-    borderRadius: '20px',
-    border: '1px solid #ddd',
-    backgroundColor: '#fff',
-    color: '#555',
-    fontSize: '14px',
+    padding: '10px 24px',
+    border: '1px solid #222',
+    backgroundColor: 'transparent',
+    color: '#666',
+    fontSize: '12px',
+    letterSpacing: '2px',
     cursor: 'pointer',
+    borderRadius: '2px',
+    transition: 'all 0.2s',
   },
-  activeFilter: {
-    backgroundColor: '#333',
-    color: '#fff',
-    border: '1px solid #333',
+  filterActive: {
+    backgroundColor: '#fff',
+    color: '#000',
+    border: '1px solid #fff',
+    fontWeight: '700',
+  },
+  count: {
+    fontSize: '12px',
+    color: '#555',
+    letterSpacing: '1px',
+    marginBottom: '24px',
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-    gap: '20px',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
+    gap: '24px',
+  },
+  loadingContainer: {
+    padding: '80px 0',
+    textAlign: 'center',
   },
   loading: {
-    color: '#999',
+    color: '#555',
     fontSize: '14px',
+    letterSpacing: '1px',
   },
 };
 
