@@ -1,19 +1,23 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+import { ShoppingCart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
+  const navigate = useNavigate();
   const [hovered, setHovered] = useState(false);
 
   return (
     <motion.div
-      style={styles.card}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      whileHover={{ y: -6 }}
-      transition={{ duration: 0.3 }}
-    >
+    style={styles.card}
+    onMouseEnter={() => setHovered(true)}
+    onMouseLeave={() => setHovered(false)}
+    onClick={() => navigate(`/product/${product.id}`)}
+    whileHover={{ y: -6 }}
+    transition={{ duration: 0.3 }}
+  >
       <div style={styles.imgContainer}>
         {product.image
           ? <img src={product.image} alt={product.name} style={styles.img} />
@@ -30,12 +34,13 @@ const ProductCard = ({ product }) => {
           transition={{ duration: 0.3 }}
         >
           <button
-            style={styles.overlayBtn}
-            onClick={() => addToCart(product)}
-            disabled={product.stock === 0}
-          >
-            {product.stock === 0 ? 'OUT OF STOCK' : 'ADD TO CART'}
-          </button>
+    style={styles.overlayBtn}
+    onClick={(e) => {
+      e.stopPropagation();
+      addToCart(product);
+    }}
+    disabled={product.stock === 0}
+  ></button>
         </motion.div>
 
         <div style={styles.categoryTag}>{product.category.name.toUpperCase()}</div>
