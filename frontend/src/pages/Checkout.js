@@ -4,9 +4,11 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useResponsive } from '../theme';
 
 const Checkout = () => {
   const { cart, totalPrice, clearCart } = useCart();
+  const { isMobile } = useResponsive();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -19,6 +21,94 @@ const Checkout = () => {
     county: user?.profile?.county || '',
     postal_code: user?.profile?.postal_code || '',
   });
+  const styles = {
+  page: { backgroundColor: '#0a0a0a', minHeight: '100vh' },
+  header: {
+    padding: isMobile ? '40px 24px 24px' : '60px 80px 40px',
+    borderBottom: '1px solid #1a1a1a',
+  },
+  headerTag: { fontSize: '11px', letterSpacing: '4px', color: '#555', marginBottom: '12px' },
+  headerTitle: {
+    fontSize: isMobile ? '32px' : '48px',
+    fontWeight: '900', color: '#fff', letterSpacing: '-1px',
+  },
+  container: {
+    padding: isMobile ? '24px' : '40px 80px 80px',
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr' : '1fr 360px',
+    gap: isMobile ? '32px' : '48px',
+    alignItems: 'start',
+  },
+  left: { display: 'flex', flexDirection: 'column', gap: '40px' },
+  section: { display: 'flex', flexDirection: 'column', gap: '16px' },
+  sectionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+  sectionTag: { fontSize: '11px', letterSpacing: '4px', color: '#555', marginBottom: '4px' },
+  changeLink: { fontSize: '12px', color: '#888', letterSpacing: '1px' },
+  methodGrid: {
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+    gap: '12px',
+  },
+  methodBtn: {
+    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
+    padding: isMobile ? '16px' : '24px',
+    border: '1px solid #222', backgroundColor: '#111',
+    cursor: 'pointer', borderRadius: '2px', transition: 'all 0.2s',
+  },
+  methodActive: { border: '1px solid #fff', backgroundColor: '#1a1a1a' },
+  methodIcon: { fontSize: '24px' },
+  methodLabel: { fontSize: '13px', color: '#fff', fontWeight: '600', letterSpacing: '0.5px' },
+  methodPrice: { fontSize: '11px', color: '#888', letterSpacing: '1px' },
+  formGroup: { display: 'flex', flexDirection: 'column', gap: '8px' },
+  label: { fontSize: '11px', letterSpacing: '2px', color: '#555' },
+  input: {
+    padding: '14px 16px', backgroundColor: '#111',
+    border: '1px solid #222', borderRadius: '2px',
+    fontSize: '14px', color: '#fff', outline: 'none',
+  },
+  mpesaBox: {
+    backgroundColor: '#111', border: '1px solid #222',
+    padding: isMobile ? '16px' : '24px', borderRadius: '2px',
+    display: 'flex', flexDirection: 'column', gap: '16px',
+  },
+  mpesaHeader: { display: 'flex', alignItems: 'center', gap: '12px' },
+  mpesaIcon: { fontSize: '20px' },
+  mpesaLabel: { fontSize: '15px', fontWeight: '700', color: '#fff', letterSpacing: '1px' },
+  mpesaBadge: { fontSize: '10px', letterSpacing: '2px', color: '#2ecc71', border: '1px solid #2ecc71', padding: '2px 8px', borderRadius: '2px' },
+  mpesaText: { fontSize: '13px', color: '#666', lineHeight: 1.6 },
+  storeBox: { backgroundColor: '#111', border: '1px solid #222', borderRadius: '2px', overflow: 'hidden' },
+  storeInfo: { padding: '24px', display: 'flex', flexDirection: 'column', gap: '8px', borderBottom: '1px solid #1a1a1a' },
+  storeName: { fontSize: '16px', fontWeight: '700', color: '#fff', letterSpacing: '2px', marginBottom: '4px' },
+  storeAddress: { fontSize: '13px', color: '#888' },
+  storeHours: { fontSize: '13px', color: '#666' },
+  mapPlaceholder: {
+    height: isMobile ? '160px' : '200px',
+    backgroundColor: '#1a1a1a', display: 'flex',
+    flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px',
+  },
+  mapText: { fontSize: '16px', color: '#444' },
+  mapSubText: { fontSize: '12px', color: '#333', letterSpacing: '1px' },
+  submitBtn: {
+    backgroundColor: '#fff', color: '#000', padding: '16px',
+    border: 'none', fontSize: '13px', fontWeight: '700',
+    letterSpacing: '2px', cursor: 'pointer', borderRadius: '2px', marginTop: '8px',
+  },
+  summary: {
+    backgroundColor: '#111', border: '1px solid #1a1a1a',
+    padding: isMobile ? '24px' : '32px',
+    position: isMobile ? 'static' : 'sticky',
+    top: '100px',
+  },
+  summaryItems: { display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' },
+  summaryItem: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+  summaryItemInfo: { display: 'flex', gap: '8px', alignItems: 'center' },
+  summaryItemName: { fontSize: '13px', color: '#ccc' },
+  summaryItemQty: { fontSize: '12px', color: '#555' },
+  summaryItemPrice: { fontSize: '13px', color: '#fff', fontWeight: '500' },
+  summaryDivider: { height: '1px', backgroundColor: '#1a1a1a', margin: '16px 0' },
+  summaryRow: { display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#666', marginBottom: '8px' },
+  summaryTotal: { display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: '700', color: '#fff', marginTop: '8px' },
+};
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -163,7 +253,7 @@ const Checkout = () => {
               <div style={styles.storeBox}>
                 <div style={styles.storeInfo}>
                   <p style={styles.storeName}>LUX FASHION STORE</p>
-                  <p style={styles.storeAddress}>📍 Nairobi, Kenya</p>
+                  <p style={styles.storeAddress}>📍 KISUMU, Kenya</p>
                   <p style={styles.storeHours}>🕐 Mon - Sat: 9:00 AM - 7:00 PM</p>
                   <p style={styles.storeHours}>🕐 Sun: 11:00 AM - 5:00 PM</p>
                 </div>
@@ -269,264 +359,6 @@ const Checkout = () => {
   );
 };
 
-const styles = {
-  page: {
-    backgroundColor: '#0a0a0a',
-    minHeight: '100vh',
-  },
-  header: {
-    padding: '60px 80px 40px',
-    borderBottom: '1px solid #1a1a1a',
-  },
-  headerTag: {
-    fontSize: '11px',
-    letterSpacing: '4px',
-    color: '#555',
-    marginBottom: '12px',
-  },
-  headerTitle: {
-    fontSize: '48px',
-    fontWeight: '900',
-    color: '#fff',
-    letterSpacing: '-1px',
-  },
-  container: {
-    padding: '40px 80px 80px',
-    display: 'grid',
-    gridTemplateColumns: '1fr 360px',
-    gap: '48px',
-    alignItems: 'start',
-  },
-  left: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '40px',
-  },
-  section: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-  },
-  sectionHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  sectionTag: {
-    fontSize: '11px',
-    letterSpacing: '4px',
-    color: '#555',
-    marginBottom: '4px',
-  },
-  changeLink: {
-    fontSize: '12px',
-    color: '#888',
-    letterSpacing: '1px',
-  },
-  methodGrid: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '12px',
-  },
-  methodBtn: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '24px',
-    border: '1px solid #222',
-    backgroundColor: '#111',
-    cursor: 'pointer',
-    borderRadius: '2px',
-    transition: 'all 0.2s',
-  },
-  methodActive: {
-    border: '1px solid #fff',
-    backgroundColor: '#1a1a1a',
-  },
-  methodIcon: {
-    fontSize: '24px',
-  },
-  methodLabel: {
-    fontSize: '13px',
-    color: '#fff',
-    fontWeight: '600',
-    letterSpacing: '0.5px',
-  },
-  methodPrice: {
-    fontSize: '11px',
-    color: '#888',
-    letterSpacing: '1px',
-  },
-  formGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  label: {
-    fontSize: '11px',
-    letterSpacing: '2px',
-    color: '#555',
-  },
-  input: {
-    padding: '14px 16px',
-    backgroundColor: '#111',
-    border: '1px solid #222',
-    borderRadius: '2px',
-    fontSize: '14px',
-    color: '#fff',
-    outline: 'none',
-  },
-  mpesaBox: {
-    backgroundColor: '#111',
-    border: '1px solid #222',
-    padding: '24px',
-    borderRadius: '2px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-  },
-  mpesaHeader: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-  },
-  mpesaIcon: {
-    fontSize: '20px',
-  },
-  mpesaLabel: {
-    fontSize: '15px',
-    fontWeight: '700',
-    color: '#fff',
-    letterSpacing: '1px',
-  },
-  mpesaBadge: {
-    fontSize: '10px',
-    letterSpacing: '2px',
-    color: '#2ecc71',
-    border: '1px solid #2ecc71',
-    padding: '2px 8px',
-    borderRadius: '2px',
-  },
-  mpesaText: {
-    fontSize: '13px',
-    color: '#666',
-    lineHeight: 1.6,
-  },
-  storeBox: {
-    backgroundColor: '#111',
-    border: '1px solid #222',
-    borderRadius: '2px',
-    overflow: 'hidden',
-  },
-  storeInfo: {
-    padding: '24px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-    borderBottom: '1px solid #1a1a1a',
-  },
-  storeName: {
-    fontSize: '16px',
-    fontWeight: '700',
-    color: '#fff',
-    letterSpacing: '2px',
-    marginBottom: '4px',
-  },
-  storeAddress: {
-    fontSize: '13px',
-    color: '#888',
-  },
-  storeHours: {
-    fontSize: '13px',
-    color: '#666',
-  },
-  mapPlaceholder: {
-    height: '200px',
-    backgroundColor: '#1a1a1a',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '8px',
-  },
-  mapText: {
-    fontSize: '16px',
-    color: '#444',
-  },
-  mapSubText: {
-    fontSize: '12px',
-    color: '#333',
-    letterSpacing: '1px',
-  },
-  submitBtn: {
-    backgroundColor: '#fff',
-    color: '#000',
-    padding: '16px',
-    border: 'none',
-    fontSize: '13px',
-    fontWeight: '700',
-    letterSpacing: '2px',
-    cursor: 'pointer',
-    borderRadius: '2px',
-    marginTop: '8px',
-  },
-  summary: {
-    backgroundColor: '#111',
-    border: '1px solid #1a1a1a',
-    padding: '32px',
-    position: 'sticky',
-    top: '100px',
-  },
-  summaryItems: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-    marginBottom: '16px',
-  },
-  summaryItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  summaryItemInfo: {
-    display: 'flex',
-    gap: '8px',
-    alignItems: 'center',
-  },
-  summaryItemName: {
-    fontSize: '13px',
-    color: '#ccc',
-  },
-  summaryItemQty: {
-    fontSize: '12px',
-    color: '#555',
-  },
-  summaryItemPrice: {
-    fontSize: '13px',
-    color: '#fff',
-    fontWeight: '500',
-  },
-  summaryDivider: {
-    height: '1px',
-    backgroundColor: '#1a1a1a',
-    margin: '16px 0',
-  },
-  summaryRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    fontSize: '13px',
-    color: '#666',
-    marginBottom: '8px',
-  },
-  summaryTotal: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    fontSize: '16px',
-    fontWeight: '700',
-    color: '#fff',
-    marginTop: '8px',
-  },
-};
+
 
 export default Checkout;

@@ -79,7 +79,7 @@ const ProductDetail = () => {
       title: 'Delivery & Returns',
       content: (
         <div style={{ color: THEME.colors.textSecondary, fontSize: '13px', lineHeight: '1.8', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <p><strong style={{ color: '#fff' }}>Nairobi Delivery:</strong> Same-day delivery for orders placed before 3PM.</p>
+          <p><strong style={{ color: '#fff' }}>Kisumu Delivery:</strong> Same-day delivery for orders placed before 3PM.</p>
           <p><strong style={{ color: '#fff' }}>Countrywide:</strong> 1-2 business days via tracked courier.</p>
           <p><strong style={{ color: '#fff' }}>Returns:</strong> Within 7 days of delivery in original condition.</p>
         </div>
@@ -101,7 +101,7 @@ const ProductDetail = () => {
 
       {/* Top ribbon */}
       <div style={{ borderBottom: `1px solid ${THEME.colors.border}`, padding: '10px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: THEME.fonts.mono, fontSize: '9px', color: THEME.colors.textSecondary, letterSpacing: '3px' }}>
-        <span>[ LUX FASHION — NAIROBI ]</span>
+        <span>[ LUX FASHION — KISUMU ]</span>
         <span style={{ color: THEME.colors.accentGreen }}>● DIRECT DISPATCH ACTIVE</span>
         <span>REF: #{product.id}</span>
       </div>

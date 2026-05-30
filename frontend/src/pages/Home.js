@@ -3,10 +3,233 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import ProductCard from '../components/ProductCard';
+import { useResponsive } from '../theme';
 
 const Home = () => {
   const [featured, setFeatured] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { isMobile, isTablet } = useResponsive();
+
+  const styles = {
+  page: {
+    backgroundColor: '#0a0a0a',
+    minHeight: '100vh',
+  },
+  hero: {
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+    minHeight: isMobile ? 'auto' : '90vh',
+    position: 'relative',
+    overflow: 'hidden',
+    padding: isMobile ? '40px 24px' : '60px 60px 60px 80px',
+    gap: '40px',
+    alignItems: 'center',
+  },
+  heroLeft: {
+    zIndex: 2,
+  },
+  heroTag: {
+    fontSize: '12px',
+    letterSpacing: '4px',
+    color: '#888',
+    marginBottom: '24px',
+  },
+   heroTitle: {
+    fontSize: isMobile ? '40px' : '72px',
+    fontWeight: '900',
+    color: '#fff',
+    lineHeight: 1,
+    marginBottom: '24px',
+    letterSpacing: isMobile ? '-1px' : '-2px',
+  },
+  heroSubtitle: {
+    fontSize: '15px',
+    color: '#888',
+    lineHeight: 1.8,
+    marginBottom: '36px',
+    maxWidth: '360px',
+  },
+  heroBtns: {
+    display: 'flex',
+    gap: '16px',
+    alignItems: 'center',
+  },
+  btnPrimary: {
+    backgroundColor: '#fff',
+    color: '#000',
+    padding: '14px 28px',
+    borderRadius: '2px',
+    fontSize: '13px',
+    fontWeight: '700',
+    letterSpacing: '1px',
+  },
+  btnOutline: {
+    backgroundColor: 'transparent',
+    color: '#fff',
+    padding: '14px 28px',
+    borderRadius: '2px',
+    fontSize: '13px',
+    fontWeight: '500',
+    border: '1px solid #444',
+    letterSpacing: '1px',
+  },
+  heroRight: {
+    position: 'relative',
+    height: isMobile ? '300px' : '70vh',
+    borderRadius: '4px',
+    overflow: 'hidden',
+    display: isMobile ? 'none' : 'block',
+  },
+  heroImg: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+  heroImgBadge: {
+    position: 'absolute',
+    bottom: '24px',
+    left: '24px',
+    backgroundColor: '#fff',
+    padding: '16px 20px',
+    borderRadius: '2px',
+  },
+  badgeNum: {
+    fontSize: '28px',
+    fontWeight: '900',
+    color: '#000',
+    lineHeight: 1,
+  },
+  badgeText: {
+    fontSize: '11px',
+    letterSpacing: '2px',
+    color: '#555',
+  },
+  verticalText: {
+    position: 'absolute',
+    left: '24px',
+    top: '50%',
+    transform: 'translateY(-50%) rotate(-90deg)',
+    fontSize: '10px',
+    letterSpacing: '4px',
+    color: '#444',
+    transformOrigin: 'center',
+  },
+  section: {
+    padding: isMobile ? '40px 24px' : '80px 80px',
+  },
+  sectionTag: {
+    fontSize: '11px',
+    letterSpacing: '4px',
+    color: '#888',
+    marginBottom: '12px',
+  },
+  sectionTitle: {
+    fontSize: '32px',
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: '40px',
+  },
+  sectionHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginBottom: '40px',
+  },
+  viewAll: {
+    fontSize: '13px',
+    color: '#888',
+    letterSpacing: '1px',
+  },
+   catGrid: {
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+    gap: '16px',
+    height: isMobile ? 'auto' : '500px',
+  },
+   catCard: {
+    position: 'relative',
+    overflow: 'hidden',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    height: isMobile ? '200px' : '100%',
+  },
+  productsGrid: {
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr' : isTablet ? '1fr 1fr' : 'repeat(auto-fill, minmax(240px, 1fr))',
+    gap: '24px',
+  },
+  catImg: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    transition: 'transform 0.5s ease',
+  },
+  catOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: '32px',
+    background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+  },
+  catTitle: {
+    fontSize: '28px',
+    fontWeight: '900',
+    color: '#fff',
+    letterSpacing: '4px',
+    marginBottom: '8px',
+  },
+  catLink: {
+    fontSize: '13px',
+    color: '#ccc',
+    letterSpacing: '1px',
+  },
+  productsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+    gap: '24px',
+  },
+  loading: {
+    color: '#555',
+    fontSize: '14px',
+  },
+  banner: {
+    margin: isMobile ? '0 24px 40px' : '0 80px 80px',
+    backgroundColor: '#111',
+    borderRadius: '4px',
+    padding: isMobile ? '40px 24px' : '80px',
+    border: '1px solid #222',
+    textAlign: 'center',
+  },
+  bannerContent: {},
+  bannerTag: {
+    fontSize: '11px',
+    letterSpacing: '4px',
+    color: '#888',
+    marginBottom: '16px',
+  },
+  bannerTitle: {
+    fontSize: isMobile ? '24px' : '36px',
+    fontWeight: '900',
+    color: '#fff',
+    marginBottom: '12px',
+  },
+  bannerSubtitle: {
+    fontSize: '14px',
+    color: '#888',
+    marginBottom: '32px',
+  },
+  bannerBtn: {
+    backgroundColor: '#fff',
+    color: '#000',
+    padding: '14px 32px',
+    borderRadius: '2px',
+    fontSize: '13px',
+    fontWeight: '700',
+    letterSpacing: '1px',
+  },
+};
+
 
   useEffect(() => {
     axios.get('http://127.0.0.1:8000/api/store/products/')
@@ -161,218 +384,6 @@ const Home = () => {
   );
 };
 
-const styles = {
-  page: {
-    backgroundColor: '#0a0a0a',
-    minHeight: '100vh',
-  },
-  hero: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    minHeight: '90vh',
-    position: 'relative',
-    overflow: 'hidden',
-    padding: '60px 60px 60px 80px',
-    gap: '40px',
-    alignItems: 'center',
-  },
-  heroLeft: {
-    zIndex: 2,
-  },
-  heroTag: {
-    fontSize: '12px',
-    letterSpacing: '4px',
-    color: '#888',
-    marginBottom: '24px',
-  },
-  heroTitle: {
-    fontSize: '72px',
-    fontWeight: '900',
-    color: '#fff',
-    lineHeight: 1,
-    marginBottom: '24px',
-    letterSpacing: '-2px',
-  },
-  heroSubtitle: {
-    fontSize: '15px',
-    color: '#888',
-    lineHeight: 1.8,
-    marginBottom: '36px',
-    maxWidth: '360px',
-  },
-  heroBtns: {
-    display: 'flex',
-    gap: '16px',
-    alignItems: 'center',
-  },
-  btnPrimary: {
-    backgroundColor: '#fff',
-    color: '#000',
-    padding: '14px 28px',
-    borderRadius: '2px',
-    fontSize: '13px',
-    fontWeight: '700',
-    letterSpacing: '1px',
-  },
-  btnOutline: {
-    backgroundColor: 'transparent',
-    color: '#fff',
-    padding: '14px 28px',
-    borderRadius: '2px',
-    fontSize: '13px',
-    fontWeight: '500',
-    border: '1px solid #444',
-    letterSpacing: '1px',
-  },
-  heroRight: {
-    position: 'relative',
-    height: '70vh',
-    borderRadius: '4px',
-    overflow: 'hidden',
-  },
-  heroImg: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-  heroImgBadge: {
-    position: 'absolute',
-    bottom: '24px',
-    left: '24px',
-    backgroundColor: '#fff',
-    padding: '16px 20px',
-    borderRadius: '2px',
-  },
-  badgeNum: {
-    fontSize: '28px',
-    fontWeight: '900',
-    color: '#000',
-    lineHeight: 1,
-  },
-  badgeText: {
-    fontSize: '11px',
-    letterSpacing: '2px',
-    color: '#555',
-  },
-  verticalText: {
-    position: 'absolute',
-    left: '24px',
-    top: '50%',
-    transform: 'translateY(-50%) rotate(-90deg)',
-    fontSize: '10px',
-    letterSpacing: '4px',
-    color: '#444',
-    transformOrigin: 'center',
-  },
-  section: {
-    padding: '80px 80px',
-  },
-  sectionTag: {
-    fontSize: '11px',
-    letterSpacing: '4px',
-    color: '#888',
-    marginBottom: '12px',
-  },
-  sectionTitle: {
-    fontSize: '32px',
-    fontWeight: '700',
-    color: '#fff',
-    marginBottom: '40px',
-  },
-  sectionHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    marginBottom: '40px',
-  },
-  viewAll: {
-    fontSize: '13px',
-    color: '#888',
-    letterSpacing: '1px',
-  },
-  catGrid: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '16px',
-    height: '500px',
-  },
-  catCard: {
-    position: 'relative',
-    overflow: 'hidden',
-    borderRadius: '4px',
-    cursor: 'pointer',
-  },
-  catImg: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    transition: 'transform 0.5s ease',
-  },
-  catOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: '32px',
-    background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
-  },
-  catTitle: {
-    fontSize: '28px',
-    fontWeight: '900',
-    color: '#fff',
-    letterSpacing: '4px',
-    marginBottom: '8px',
-  },
-  catLink: {
-    fontSize: '13px',
-    color: '#ccc',
-    letterSpacing: '1px',
-  },
-  productsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
-    gap: '24px',
-  },
-  loading: {
-    color: '#555',
-    fontSize: '14px',
-  },
-  banner: {
-    margin: '0 80px 80px',
-    backgroundColor: '#080808',
-    borderRadius: '4px',
-    padding: '80px',
-    border: '1px solid #222',
-    textAlign: 'center',
-  },
-  bannerContent: {},
-  bannerTag: {
-    fontSize: '11px',
-    letterSpacing: '4px',
-    color: '#888',
-    marginBottom: '16px',
-  },
-  bannerTitle: {
-    fontSize: '36px',
-    fontWeight: '900',
-    color: '#fff',
-    marginBottom: '12px',
-  },
-  bannerSubtitle: {
-    fontSize: '14px',
-    color: '#888',
-    marginBottom: '32px',
-  },
-  bannerBtn: {
-    backgroundColor: '#fff',
-    color: '#000',
-    padding: '14px 32px',
-    borderRadius: '2px',
-    fontSize: '13px',
-    fontWeight: '700',
-    letterSpacing: '1px',
-  },
-};
 
 
 export default Home;

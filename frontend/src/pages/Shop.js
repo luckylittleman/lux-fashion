@@ -3,12 +3,83 @@ import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import ProductCard from '../components/ProductCard';
+import { useResponsive } from '../theme';
 
 const Shop = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('all');
+  const { isMobile } = useResponsive();
   const location = useLocation();
+
+  const styles = {
+  page: {
+    backgroundColor: '#0a0a0a',
+    minHeight: '100vh',
+  },
+  header: {
+    padding: isMobile ? '40px 24px 24px' : '60px 80px 40px',
+    borderBottom: '1px solid #1a1a1a',
+  },
+  headerTag: {
+    fontSize: '11px',
+    letterSpacing: '4px',
+    color: '#555',
+    marginBottom: '12px',
+  },
+  headerTitle: {
+    fontSize: isMobile ? '32px' : '48px',
+    fontWeight: '900',
+    color: '#fff',
+    letterSpacing: '-1px',
+  },
+  container: {
+    padding: isMobile ? '24px' : '40px 80px 80px',
+  },
+  filters: {
+    display: 'flex',
+    gap: '8px',
+    marginBottom: '32px',
+    flexWrap: 'wrap',
+  },
+  filterBtn: {
+    padding: isMobile ? '8px 16px' : '10px 24px',
+    border: '1px solid #222',
+    backgroundColor: 'transparent',
+    color: '#666',
+    fontSize: '12px',
+    letterSpacing: '2px',
+    cursor: 'pointer',
+    borderRadius: '2px',
+    transition: 'all 0.2s',
+  },
+  filterActive: {
+    backgroundColor: '#fff',
+    color: '#000',
+    border: '1px solid #fff',
+    fontWeight: '700',
+  },
+  count: {
+    fontSize: '12px',
+    color: '#555',
+    letterSpacing: '1px',
+    marginBottom: '24px',
+  },
+   grid: {
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fill, minmax(260px, 1fr))',
+    gap: isMobile ? '16px' : '24px',
+  },
+  loadingContainer: {
+    padding: '80px 0',
+    textAlign: 'center',
+  },
+  loading: {
+    color: '#555',
+    fontSize: '14px',
+    letterSpacing: '1px',
+  },
+};
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -104,72 +175,6 @@ const Shop = () => {
   );
 };
 
-const styles = {
-  page: {
-    backgroundColor: '#0a0a0a',
-    minHeight: '100vh',
-  },
-  header: {
-    padding: '60px 80px 40px',
-    borderBottom: '1px solid #1a1a1a',
-  },
-  headerTag: {
-    fontSize: '11px',
-    letterSpacing: '4px',
-    color: '#555',
-    marginBottom: '12px',
-  },
-  headerTitle: {
-    fontSize: '48px',
-    fontWeight: '900',
-    color: '#fff',
-    letterSpacing: '-1px',
-  },
-  container: {
-    padding: '40px 80px 80px',
-  },
-  filters: {
-    display: 'flex',
-    gap: '8px',
-    marginBottom: '32px',
-  },
-  filterBtn: {
-    padding: '10px 24px',
-    border: '1px solid #222',
-    backgroundColor: 'transparent',
-    color: '#666',
-    fontSize: '12px',
-    letterSpacing: '2px',
-    cursor: 'pointer',
-    borderRadius: '2px',
-    transition: 'all 0.2s',
-  },
-  filterActive: {
-    backgroundColor: '#fff',
-    color: '#000',
-    border: '1px solid #fff',
-    fontWeight: '700',
-  },
-  count: {
-    fontSize: '12px',
-    color: '#555',
-    letterSpacing: '1px',
-    marginBottom: '24px',
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-    gap: '24px',
-  },
-  loadingContainer: {
-    padding: '80px 0',
-    textAlign: 'center',
-  },
-  loading: {
-    color: '#555',
-    fontSize: '14px',
-    letterSpacing: '1px',
-  },
-};
+
 
 export default Shop;

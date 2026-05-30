@@ -1,4 +1,6 @@
 import { useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { THEME } from '../theme';
 
 const Toast = ({ message, onClose }) => {
   useEffect(() => {
@@ -9,45 +11,57 @@ const Toast = ({ message, onClose }) => {
   }, [onClose]);
 
   return (
-    <div style={styles.toast}>
-      <span style={styles.icon}>✓</span>
-      <span style={styles.message}>{message}</span>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, x: 150 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 150, scale: 0.95 }}
+      transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+      style={{
+        backgroundColor: '#111111',
+        color: '#ffffff',
+        border: '1px solid #ffffff',
+        borderRadius: THEME.borderRadius,
+        padding: '14px 24px',
+        minWidth: '260px',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+        fontFamily: THEME.fonts.mono,
+        fontSize: '11px',
+        letterSpacing: '2px',
+        textTransform: 'uppercase',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '16px',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: THEME.colors.accentGreen, flexShrink: 0 }} />
+        <span>{message}</span>
+      </div>
+      <button
+        onClick={onClose}
+        style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', fontSize: '14px', padding: '2px 4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
+        onMouseLeave={(e) => e.currentTarget.style.color = '#888'}
+      >
+        ✕
+      </button>
+    </motion.div>
   );
 };
 
-const styles = {
-  toast: {
-    position: 'fixed',
-    bottom: '24px',
-    right: '24px',
-    backgroundColor: '#333',
-    color: '#fff',
-    padding: '14px 20px',
-    borderRadius: '8px',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    fontSize: '14px',
-    zIndex: 1000,
-    boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-    animation: 'slideIn 0.3s ease',
-  },
-  icon: {
-    backgroundColor: '#2ecc71',
-    color: '#fff',
-    borderRadius: '50%',
-    width: '20px',
-    height: '20px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '12px',
-    fontWeight: 'bold',
-  },
-  message: {
-    fontSize: '14px',
-  },
+export const ToastContainer = ({ toast, hideToast }) => {
+  return (
+    <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999, pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px' }}>
+      <AnimatePresence>
+        {toast && (
+          <div style={{ pointerEvents: 'auto' }}>
+            <Toast message={toast} onClose={hideToast} />
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 };
 
 export default Toast;

@@ -4,7 +4,7 @@ import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { useCart } from './context/CartContext';
 import Navbar from './components/Navbar';
-import Toast from './components/Toast';
+import { ToastContainer } from './components/Toast';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
@@ -31,7 +31,7 @@ const AppContent = () => {
     <>
       <ScrollToTop />
       <Navbar />
-      {toast && <Toast message={toast} onClose={hideToast} />}
+      <ToastContainer toast={toast} hideToast={hideToast} />
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/shop' element={<Shop />} />
