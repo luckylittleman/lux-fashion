@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import { THEME, typography, components } from '../theme';
 
 const Login = () => {
   const { login } = useAuth();
@@ -9,14 +10,9 @@ const Login = () => {
   const [method, setMethod] = useState('email');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
-    identifier: '',
-    password: '',
-  });
+  const [form, setForm] = useState({ identifier: '', password: '' });
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,206 +28,149 @@ const Login = () => {
   };
 
   return (
-    <div style={styles.page}>
+    <div style={{
+      backgroundColor: THEME.colors.bg,
+      minHeight: '100vh',
+      paddingTop: '64px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '64px 24px',
+    }}>
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        style={styles.card}
+        style={{ width: '100%', maxWidth: '440px' }}
       >
-        <p style={styles.tag}>WELCOME BACK</p>
-        <h2 style={styles.title}>Sign In</h2>
-        <p style={styles.subtitle}>Sign in to your Lux Fashion account</p>
+        <p style={{ ...typography.labelSm, color: THEME.colors.secondary, marginBottom: '12px' }}>
+          WELCOME BACK
+        </p>
+        <h2 style={{ fontFamily: "'Bodoni Moda', serif", fontSize: '40px', fontWeight: 600, color: THEME.colors.onSurface, marginBottom: '8px' }}>
+          Sign In
+        </h2>
+        <p style={{ ...typography.bodyMd, color: THEME.colors.onSurfaceVariant, marginBottom: '40px' }}>
+          Sign in to your Lux Fashion account
+        </p>
 
-        <div style={styles.toggle}>
-          <button
-            style={{
-              ...styles.toggleBtn,
-              ...(method === 'email' ? styles.toggleActive : {}),
-            }}
-            onClick={() => setMethod('email')}
-            type='button'
-          >
-            EMAIL
-          </button>
-          <button
-            style={{
-              ...styles.toggleBtn,
-              ...(method === 'phone' ? styles.toggleActive : {}),
-            }}
-            onClick={() => setMethod('phone')}
-            type='button'
-          >
-            PHONE
-          </button>
+        {/* Toggle */}
+        <div style={{ display: 'flex', border: `1px solid ${THEME.colors.border}`, marginBottom: '32px' }}>
+          {['email', 'phone'].map(m => (
+            <button
+              key={m}
+              type='button'
+              onClick={() => { setMethod(m); setForm({ identifier: '', password: '' }); }}
+              style={{
+                flex: 1,
+                padding: '12px',
+                border: 'none',
+                backgroundColor: method === m ? '#000' : 'transparent',
+                color: method === m ? '#fff' : THEME.colors.onSurfaceVariant,
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '12px',
+                fontWeight: 700,
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >
+              {m.toUpperCase()}
+            </button>
+          ))}
         </div>
 
         {error && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            style={styles.error}
+            style={{
+              backgroundColor: '#ffdad6',
+              color: '#93000a',
+              padding: '12px 16px',
+              fontSize: '13px',
+              fontFamily: "'DM Sans', sans-serif",
+              marginBottom: '24px',
+              border: '1px solid #ffb4ab',
+            }}
           >
             {error}
           </motion.div>
         )}
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.formGroup}>
-            <label style={styles.label}>
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '24px' }}>
+            <label style={{ ...typography.labelSm, fontSize: '11px', color: THEME.colors.onSurfaceVariant, display: 'block', marginBottom: '8px' }}>
               {method === 'email' ? 'EMAIL ADDRESS' : 'PHONE NUMBER'}
             </label>
             <input
-              style={styles.input}
               type={method === 'email' ? 'email' : 'text'}
               name='identifier'
               placeholder={method === 'email' ? 'john@email.com' : '07XXXXXXXX'}
               value={form.identifier}
               onChange={handleChange}
               required
+              style={{
+                width: '100%',
+                backgroundColor: 'transparent',
+                border: 'none',
+                borderBottom: `1px solid ${THEME.colors.border}`,
+                padding: '12px 0',
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '16px',
+                color: THEME.colors.onSurface,
+                outline: 'none',
+              }}
+              onFocus={e => e.target.style.borderBottomColor = '#000'}
+              onBlur={e => e.target.style.borderBottomColor = THEME.colors.border}
             />
           </div>
-          <div style={styles.formGroup}>
-            <label style={styles.label}>PASSWORD</label>
+
+          <div style={{ marginBottom: '40px' }}>
+            <label style={{ ...typography.labelSm, fontSize: '11px', color: THEME.colors.onSurfaceVariant, display: 'block', marginBottom: '8px' }}>
+              PASSWORD
+            </label>
             <input
-              style={styles.input}
               type='password'
               name='password'
               placeholder='Enter your password'
               value={form.password}
               onChange={handleChange}
               required
+              style={{
+                width: '100%',
+                backgroundColor: 'transparent',
+                border: 'none',
+                borderBottom: `1px solid ${THEME.colors.border}`,
+                padding: '12px 0',
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '16px',
+                color: THEME.colors.onSurface,
+                outline: 'none',
+              }}
+              onFocus={e => e.target.style.borderBottomColor = '#000'}
+              onBlur={e => e.target.style.borderBottomColor = THEME.colors.border}
             />
           </div>
+
           <button
             type='submit'
-            style={styles.btn}
             disabled={loading}
+            style={{ ...components.btnPrimary, width: '100%', display: 'flex' }}
           >
             {loading ? 'SIGNING IN...' : 'SIGN IN →'}
           </button>
         </form>
 
-        <p style={styles.footer}>
+        <p style={{ ...typography.bodyMd, color: THEME.colors.onSurfaceVariant, textAlign: 'center', marginTop: '32px' }}>
           Don't have an account?{' '}
-          <Link to='/signup' style={styles.link}>Sign up</Link>
+          <Link to='/signup' style={{ color: THEME.colors.onSurface, fontWeight: 600, borderBottom: '1px solid #000', paddingBottom: '2px' }}>
+            Sign up
+          </Link>
         </p>
       </motion.div>
     </div>
   );
-};
-
-const styles = {
-  page: {
-    backgroundColor: '#0a0a0a',
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '40px',
-  },
-  card: {
-    backgroundColor: '#111',
-    border: '1px solid #1a1a1a',
-    padding: '48px',
-    width: '100%',
-    maxWidth: '420px',
-  },
-  tag: {
-    fontSize: '11px',
-    letterSpacing: '4px',
-    color: '#555',
-    marginBottom: '12px',
-  },
-  title: {
-    fontSize: '32px',
-    fontWeight: '900',
-    color: '#fff',
-    marginBottom: '8px',
-    letterSpacing: '-0.5px',
-  },
-  subtitle: {
-    fontSize: '14px',
-    color: '#555',
-    marginBottom: '32px',
-  },
-  toggle: {
-    display: 'flex',
-    border: '1px solid #222',
-    borderRadius: '2px',
-    overflow: 'hidden',
-    marginBottom: '28px',
-  },
-  toggleBtn: {
-    flex: 1,
-    padding: '12px',
-    border: 'none',
-    backgroundColor: '#0a0a0a',
-    color: '#555',
-    fontSize: '11px',
-    letterSpacing: '2px',
-    cursor: 'pointer',
-  },
-  toggleActive: {
-    backgroundColor: '#fff',
-    color: '#000',
-    fontWeight: '700',
-  },
-  error: {
-    backgroundColor: '#1a0a0a',
-    color: '#e74c3c',
-    padding: '12px 16px',
-    fontSize: '13px',
-    marginBottom: '20px',
-    border: '1px solid #2a0a0a',
-    letterSpacing: '0.5px',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px',
-  },
-  formGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  },
-  label: {
-    fontSize: '11px',
-    letterSpacing: '2px',
-    color: '#555',
-  },
-  input: {
-    padding: '14px 16px',
-    backgroundColor: '#0a0a0a',
-    border: '1px solid #222',
-    fontSize: '14px',
-    color: '#fff',
-    outline: 'none',
-    borderRadius: '2px',
-  },
-  btn: {
-    backgroundColor: '#fff',
-    color: '#000',
-    padding: '14px',
-    border: 'none',
-    fontSize: '12px',
-    fontWeight: '700',
-    letterSpacing: '2px',
-    cursor: 'pointer',
-    marginTop: '8px',
-    borderRadius: '2px',
-  },
-  footer: {
-    textAlign: 'center',
-    fontSize: '13px',
-    color: '#555',
-    marginTop: '28px',
-  },
-  link: {
-    color: '#fff',
-    fontWeight: '600',
-  },
 };
 
 export default Login;

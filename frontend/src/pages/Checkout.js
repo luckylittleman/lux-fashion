@@ -1,16 +1,22 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { useResponsive } from '../theme';
+import { THEME, typography, components, useResponsive } from '../theme';
+
+const COUNTIES = [
+  'Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret',
+  'Thika', 'Nyeri', 'Machakos', 'Meru', 'Kisii',
+  'Kakamega', 'Garissa', 'Embu', 'Malindi', 'Kitale',
+];
 
 const Checkout = () => {
   const { cart, totalPrice, clearCart } = useCart();
-  const { isMobile } = useResponsive();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { isMobile } = useResponsive();
   const [loading, setLoading] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState('delivery');
   const [form, setForm] = useState({
@@ -18,97 +24,10 @@ const Checkout = () => {
     email: user?.email || '',
     phone: user?.phone || '',
     address: user?.profile?.address || '',
-    county: user?.profile?.county || '',
+    county: user?.profile?.county || 'Nairobi',
     postal_code: user?.profile?.postal_code || '',
+    mpesa_phone: user?.phone || '',
   });
-  const styles = {
-  page: { backgroundColor: '#0a0a0a', minHeight: '100vh' },
-  header: {
-    padding: isMobile ? '40px 24px 24px' : '60px 80px 40px',
-    borderBottom: '1px solid #1a1a1a',
-  },
-  headerTag: { fontSize: '11px', letterSpacing: '4px', color: '#555', marginBottom: '12px' },
-  headerTitle: {
-    fontSize: isMobile ? '32px' : '48px',
-    fontWeight: '900', color: '#fff', letterSpacing: '-1px',
-  },
-  container: {
-    padding: isMobile ? '24px' : '40px 80px 80px',
-    display: 'grid',
-    gridTemplateColumns: isMobile ? '1fr' : '1fr 360px',
-    gap: isMobile ? '32px' : '48px',
-    alignItems: 'start',
-  },
-  left: { display: 'flex', flexDirection: 'column', gap: '40px' },
-  section: { display: 'flex', flexDirection: 'column', gap: '16px' },
-  sectionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-  sectionTag: { fontSize: '11px', letterSpacing: '4px', color: '#555', marginBottom: '4px' },
-  changeLink: { fontSize: '12px', color: '#888', letterSpacing: '1px' },
-  methodGrid: {
-    display: 'grid',
-    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-    gap: '12px',
-  },
-  methodBtn: {
-    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px',
-    padding: isMobile ? '16px' : '24px',
-    border: '1px solid #222', backgroundColor: '#111',
-    cursor: 'pointer', borderRadius: '2px', transition: 'all 0.2s',
-  },
-  methodActive: { border: '1px solid #fff', backgroundColor: '#1a1a1a' },
-  methodIcon: { fontSize: '24px' },
-  methodLabel: { fontSize: '13px', color: '#fff', fontWeight: '600', letterSpacing: '0.5px' },
-  methodPrice: { fontSize: '11px', color: '#888', letterSpacing: '1px' },
-  formGroup: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  label: { fontSize: '11px', letterSpacing: '2px', color: '#555' },
-  input: {
-    padding: '14px 16px', backgroundColor: '#111',
-    border: '1px solid #222', borderRadius: '2px',
-    fontSize: '14px', color: '#fff', outline: 'none',
-  },
-  mpesaBox: {
-    backgroundColor: '#111', border: '1px solid #222',
-    padding: isMobile ? '16px' : '24px', borderRadius: '2px',
-    display: 'flex', flexDirection: 'column', gap: '16px',
-  },
-  mpesaHeader: { display: 'flex', alignItems: 'center', gap: '12px' },
-  mpesaIcon: { fontSize: '20px' },
-  mpesaLabel: { fontSize: '15px', fontWeight: '700', color: '#fff', letterSpacing: '1px' },
-  mpesaBadge: { fontSize: '10px', letterSpacing: '2px', color: '#2ecc71', border: '1px solid #2ecc71', padding: '2px 8px', borderRadius: '2px' },
-  mpesaText: { fontSize: '13px', color: '#666', lineHeight: 1.6 },
-  storeBox: { backgroundColor: '#111', border: '1px solid #222', borderRadius: '2px', overflow: 'hidden' },
-  storeInfo: { padding: '24px', display: 'flex', flexDirection: 'column', gap: '8px', borderBottom: '1px solid #1a1a1a' },
-  storeName: { fontSize: '16px', fontWeight: '700', color: '#fff', letterSpacing: '2px', marginBottom: '4px' },
-  storeAddress: { fontSize: '13px', color: '#888' },
-  storeHours: { fontSize: '13px', color: '#666' },
-  mapPlaceholder: {
-    height: isMobile ? '160px' : '200px',
-    backgroundColor: '#1a1a1a', display: 'flex',
-    flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px',
-  },
-  mapText: { fontSize: '16px', color: '#444' },
-  mapSubText: { fontSize: '12px', color: '#333', letterSpacing: '1px' },
-  submitBtn: {
-    backgroundColor: '#fff', color: '#000', padding: '16px',
-    border: 'none', fontSize: '13px', fontWeight: '700',
-    letterSpacing: '2px', cursor: 'pointer', borderRadius: '2px', marginTop: '8px',
-  },
-  summary: {
-    backgroundColor: '#111', border: '1px solid #1a1a1a',
-    padding: isMobile ? '24px' : '32px',
-    position: isMobile ? 'static' : 'sticky',
-    top: '100px',
-  },
-  summaryItems: { display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '16px' },
-  summaryItem: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-  summaryItemInfo: { display: 'flex', gap: '8px', alignItems: 'center' },
-  summaryItemName: { fontSize: '13px', color: '#ccc' },
-  summaryItemQty: { fontSize: '12px', color: '#555' },
-  summaryItemPrice: { fontSize: '13px', color: '#fff', fontWeight: '500' },
-  summaryDivider: { height: '1px', backgroundColor: '#1a1a1a', margin: '16px 0' },
-  summaryRow: { display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#666', marginBottom: '8px' },
-  summaryTotal: { display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: '700', color: '#fff', marginTop: '8px' },
-};
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -117,9 +36,13 @@ const Checkout = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     const orderData = {
-      ...form,
+      full_name: form.full_name,
+      email: form.email,
+      phone: form.phone,
+      address: deliveryMethod === 'pickup' ? 'Store Pickup' : form.address,
+      county: deliveryMethod === 'pickup' ? 'Nairobi' : form.county,
+      postal_code: form.postal_code,
       total_price: totalPrice + (deliveryMethod === 'delivery' ? 200 : 0),
       items: cart.map(item => ({
         product: item.id,
@@ -127,7 +50,6 @@ const Checkout = () => {
         price: item.price,
       })),
     };
-
     try {
       const res = await axios.post('http://127.0.0.1:8000/api/orders/', orderData);
       clearCart();
@@ -139,226 +61,248 @@ const Checkout = () => {
     }
   };
 
+  const InputField = ({ name, label, placeholder, type = 'text', required = true }) => (
+    <div style={{ marginBottom: '24px' }}>
+      <label style={{ ...typography.labelSm, fontSize: '11px', color: THEME.colors.onSurfaceVariant, display: 'block', marginBottom: '8px' }}>
+        {label}
+      </label>
+      <input
+        type={type}
+        name={name}
+        placeholder={placeholder}
+        value={form[name]}
+        onChange={handleChange}
+        required={required}
+        style={{
+          width: '100%',
+          backgroundColor: 'transparent',
+          border: 'none',
+          borderBottom: `1px solid ${THEME.colors.border}`,
+          padding: '12px 0',
+          fontFamily: "'DM Sans', sans-serif",
+          fontSize: '16px',
+          color: THEME.colors.onSurface,
+          outline: 'none',
+        }}
+        onFocus={e => e.target.style.borderBottomColor = '#000'}
+        onBlur={e => e.target.style.borderBottomColor = THEME.colors.border}
+      />
+    </div>
+  );
+
   return (
-    <div style={styles.page}>
-      <div style={styles.header}>
-        <p style={styles.headerTag}>CHECKOUT</p>
-        <h1 style={styles.headerTitle}>Complete Your Order</h1>
-      </div>
+    <div style={{ backgroundColor: THEME.colors.bg, minHeight: '100vh', paddingTop: '64px', paddingBottom: isMobile ? '72px' : '0' }}>
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: isMobile ? '40px 24px' : '64px 64px' }}>
 
-      <div style={styles.container}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          style={styles.left}
-        >
-          {/* Delivery Method */}
-          <div style={styles.section}>
-            <p style={styles.sectionTag}>DELIVERY METHOD</p>
-            <div style={styles.methodGrid}>
-              <button
-                style={{
-                  ...styles.methodBtn,
-                  ...(deliveryMethod === 'delivery' ? styles.methodActive : {}),
-                }}
-                onClick={() => setDeliveryMethod('delivery')}
-                type='button'
-              >
-                <span style={styles.methodIcon}>🚚</span>
-                <span style={styles.methodLabel}>Home Delivery</span>
-                <span style={styles.methodPrice}>KSh 200</span>
-              </button>
-              <button
-                style={{
-                  ...styles.methodBtn,
-                  ...(deliveryMethod === 'pickup' ? styles.methodActive : {}),
-                }}
-                onClick={() => setDeliveryMethod('pickup')}
-                type='button'
-              >
-                <span style={styles.methodIcon}>🏪</span>
-                <span style={styles.methodLabel}>Pick Up at Store</span>
-                <span style={styles.methodPrice}>Free</span>
-              </button>
-            </div>
-          </div>
+        <form onSubmit={handleSubmit}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 380px', gap: isMobile ? '40px' : '64px', alignItems: 'start' }}>
 
-          {/* Delivery Details or Store Location */}
-          {deliveryMethod === 'delivery' ? (
-            <form onSubmit={handleSubmit} style={styles.section}>
-              <div style={styles.sectionHeader}>
-                <p style={styles.sectionTag}>DELIVERY DETAILS</p>
-                {user?.profile?.address && (
-                  <Link to='/profile' style={styles.changeLink}>
-                    Change address →
-                  </Link>
-                )}
-              </div>
-              {[
-                { name: 'full_name', label: 'FULL NAME', placeholder: 'John Kamau' },
-                { name: 'email', label: 'EMAIL ADDRESS', placeholder: 'john@email.com' },
-                { name: 'phone', label: 'PHONE NUMBER', placeholder: '07XXXXXXXX' },
-                { name: 'address', label: 'DELIVERY ADDRESS', placeholder: 'Street, City' },
-                { name: 'county', label: 'COUNTY', placeholder: 'Nairobi' },
-                { name: 'postal_code', label: 'POSTAL CODE', placeholder: '00100' },
-              ].map(field => (
-                <div key={field.name} style={styles.formGroup}>
-                  <label style={styles.label}>{field.label}</label>
-                  <input
-                    style={styles.input}
-                    type='text'
-                    name={field.name}
-                    placeholder={field.placeholder}
-                    value={form[field.name]}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              ))}
-
-              {/* Payment */}
-              <p style={styles.sectionTag}>PAYMENT METHOD</p>
-              <div style={styles.mpesaBox}>
-                <div style={styles.mpesaHeader}>
-                  <span style={styles.mpesaIcon}>📱</span>
-                  <span style={styles.mpesaLabel}>M-Pesa</span>
-                  <span style={styles.mpesaBadge}>ONLY OPTION</span>
-                </div>
-                <p style={styles.mpesaText}>
-                  You will receive an M-Pesa prompt on your phone after placing the order.
+            {/* Left */}
+            <div>
+              {/* Cart Items */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                <h1 style={{ fontFamily: "'Bodoni Moda', serif", fontSize: isMobile ? '40px' : '56px', fontWeight: 600, lineHeight: 1.1, color: THEME.colors.onSurface, marginBottom: '8px' }}>
+                  Your Shopping Bag
+                </h1>
+                <p style={{ ...typography.bodyMd, color: THEME.colors.onSurfaceVariant, marginBottom: '40px' }}>
+                  Refined selections for the modern silhouette.
                 </p>
-                <div style={styles.formGroup}>
-                  <label style={styles.label}>M-PESA PHONE NUMBER</label>
-                  <input
-                    style={styles.input}
-                    type='text'
-                    placeholder='07XXXXXXXX'
-                    required
-                  />
-                </div>
-              </div>
 
-              <button
-                type='submit'
-                style={styles.submitBtn}
-                disabled={loading}
-              >
-                {loading ? 'PLACING ORDER...' : 'PLACE ORDER →'}
-              </button>
-            </form>
-          ) : (
-            <div style={styles.section}>
-              <p style={styles.sectionTag}>STORE LOCATION</p>
-              <div style={styles.storeBox}>
-                <div style={styles.storeInfo}>
-                  <p style={styles.storeName}>LUX FASHION STORE</p>
-                  <p style={styles.storeAddress}>📍 KISUMU, Kenya</p>
-                  <p style={styles.storeHours}>🕐 Mon - Sat: 9:00 AM - 7:00 PM</p>
-                  <p style={styles.storeHours}>🕐 Sun: 11:00 AM - 5:00 PM</p>
-                </div>
-                <div style={styles.mapPlaceholder}>
-                  <p style={styles.mapText}>📍 Map coming soon</p>
-                  <p style={styles.mapSubText}>Exact location will be provided here</p>
-                </div>
-              </div>
-
-              {/* Pickup form */}
-              <form onSubmit={handleSubmit}>
-                <p style={styles.sectionTag} style={{ marginTop: '32px' }}>YOUR DETAILS</p>
-                {[
-                  { name: 'full_name', label: 'FULL NAME', placeholder: 'John Kamau' },
-                  { name: 'phone', label: 'PHONE NUMBER', placeholder: '07XXXXXXXX' },
-                ].map(field => (
-                  <div key={field.name} style={styles.formGroup}>
-                    <label style={styles.label}>{field.label}</label>
-                    <input
-                      style={styles.input}
-                      type='text'
-                      name={field.name}
-                      placeholder={field.placeholder}
-                      value={form[field.name]}
-                      onChange={handleChange}
-                      required
-                    />
+                {cart.map((item, i) => (
+                  <div key={item.id} style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '16px', marginBottom: '24px', paddingBottom: '24px', borderBottom: `1px solid ${THEME.colors.border}` }}>
+                    <div style={{ aspectRatio: '4/5', overflow: 'hidden', backgroundColor: '#e8e8e8' }}>
+                      {item.image ? (
+                        <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <span className="material-symbols-outlined" style={{ color: '#c4c7c7', fontSize: '20px' }}>image</span>
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                      <div>
+                        <p style={{ ...typography.labelSm, color: THEME.colors.secondary, fontSize: '10px', marginBottom: '4px' }}>
+                          {item.category.name.toUpperCase()}
+                        </p>
+                        <h4 style={{ fontFamily: "'Bodoni Moda', serif", fontSize: '16px', fontWeight: 500, color: THEME.colors.onSurface }}>
+                          {item.name}
+                        </h4>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ ...typography.labelSm, fontSize: '11px', color: THEME.colors.onSurfaceVariant }}>
+                          QTY: {item.quantity}
+                        </span>
+                        <span style={{ ...typography.priceTag, color: THEME.colors.secondary, fontSize: '16px' }}>
+                          KSh {Number(item.price * item.quantity).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 ))}
+              </motion.div>
 
-                {/* Payment */}
-                <p style={styles.sectionTag}>PAYMENT METHOD</p>
-                <div style={styles.mpesaBox}>
-                  <div style={styles.mpesaHeader}>
-                    <span style={styles.mpesaIcon}>📱</span>
-                    <span style={styles.mpesaLabel}>M-Pesa</span>
-                    <span style={styles.mpesaBadge}>ONLY OPTION</span>
+              {/* Shipping Information */}
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} style={{ marginTop: '48px' }}>
+                <h2 style={{ fontFamily: "'Bodoni Moda', serif", fontSize: isMobile ? '32px' : '40px', fontWeight: 600, color: THEME.colors.onSurface, marginBottom: '32px' }}>
+                  Shipping Information
+                </h2>
+
+                {/* Delivery Method */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '32px' }}>
+                  {[
+                    { id: 'delivery', label: 'Home Delivery', sub: 'KSh 200', icon: 'local_shipping' },
+                    { id: 'pickup', label: 'Store Pickup', sub: 'FREE', icon: 'storefront' },
+                  ].map(method => (
+                    <button
+                      key={method.id}
+                      type='button'
+                      onClick={() => setDeliveryMethod(method.id)}
+                      style={{
+                        padding: '16px',
+                        border: `1px solid ${deliveryMethod === method.id ? '#000' : THEME.colors.border}`,
+                        backgroundColor: deliveryMethod === method.id ? '#000' : 'transparent',
+                        color: deliveryMethod === method.id ? '#fff' : THEME.colors.onSurface,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '8px',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>{method.icon}</span>
+                      <span style={{ ...typography.labelSm, fontSize: '11px' }}>{method.label}</span>
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: method.id === 'pickup' ? '#2ecc71' : 'inherit' }}>
+                        {method.sub}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                {deliveryMethod === 'delivery' ? (
+                  <>
+                    <InputField name='full_name' label='FULL NAME' placeholder='John Kamau' />
+                    <InputField name='email' label='EMAIL ADDRESS' placeholder='john@email.com' type='email' />
+                    <InputField name='phone' label='PHONE NUMBER (M-PESA)' placeholder='07XXXXXXXX' />
+                    <InputField name='address' label='STREET ADDRESS / APARTMENT' placeholder='Moi Avenue, Apt 4B' />
+                    <div style={{ marginBottom: '24px' }}>
+                      <label style={{ ...typography.labelSm, fontSize: '11px', color: THEME.colors.onSurfaceVariant, display: 'block', marginBottom: '8px' }}>
+                        COUNTY
+                      </label>
+                      <select
+                        name='county'
+                        value={form.county}
+                        onChange={handleChange}
+                        style={{
+                          width: '100%',
+                          backgroundColor: 'transparent',
+                          border: 'none',
+                          borderBottom: `1px solid ${THEME.colors.border}`,
+                          padding: '12px 0',
+                          fontFamily: "'DM Sans', sans-serif",
+                          fontSize: '16px',
+                          color: THEME.colors.onSurface,
+                          outline: 'none',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {COUNTIES.map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                    <InputField name='postal_code' label='POSTAL CODE' placeholder='00100' required={false} />
+                  </>
+                ) : (
+                  <div style={{ backgroundColor: THEME.colors.surfaceContainerLow, padding: '24px', marginBottom: '24px' }}>
+                    <p style={{ ...typography.labelSm, color: THEME.colors.secondary, marginBottom: '8px' }}>STORE LOCATION</p>
+                    <p style={{ fontFamily: "'Bodoni Moda', serif", fontSize: '18px', fontWeight: 500, color: THEME.colors.onSurface, marginBottom: '8px' }}>
+                      Lux Fashion Flagship
+                    </p>
+                    <p style={{ ...typography.bodyMd, color: THEME.colors.onSurfaceVariant, marginBottom: '4px' }}>📍 Nairobi, Kenya</p>
+                    <p style={{ ...typography.bodyMd, color: THEME.colors.onSurfaceVariant, marginBottom: '4px' }}>🕐 Mon–Sat: 9:00 AM – 7:00 PM</p>
+                    <p style={{ ...typography.bodyMd, color: THEME.colors.onSurfaceVariant }}>🕐 Sun: 11:00 AM – 5:00 PM</p>
+                    <div style={{ height: '160px', backgroundColor: '#e8e8e8', marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <p style={{ ...typography.labelSm, color: THEME.colors.onSurfaceVariant }}>MAP COMING SOON</p>
+                    </div>
+                    <div style={{ marginTop: '24px' }}>
+                      <InputField name='full_name' label='FULL NAME' placeholder='John Kamau' />
+                      <InputField name='phone' label='PHONE NUMBER' placeholder='07XXXXXXXX' />
+                    </div>
                   </div>
-                  <p style={styles.mpesaText}>
-                    You will receive an M-Pesa prompt on your phone after placing the order.
-                  </p>
-                  <div style={styles.formGroup}>
-                    <label style={styles.label}>M-PESA PHONE NUMBER</label>
-                    <input
-                      style={styles.input}
-                      type='text'
-                      placeholder='07XXXXXXXX'
-                      required
-                    />
+                )}
+              </motion.div>
+            </div>
+
+            {/* Right - Order Summary */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              style={{
+                position: isMobile ? 'static' : 'sticky',
+                top: '80px',
+              }}
+            >
+              <div style={{ backgroundColor: THEME.colors.surfaceContainerLow, padding: '32px' }}>
+                <h3 style={{ fontFamily: "'Bodoni Moda', serif", fontSize: '24px', fontWeight: 500, color: THEME.colors.onSurface, marginBottom: '24px' }}>
+                  Order Summary
+                </h3>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ ...typography.bodyMd, color: THEME.colors.onSurfaceVariant }}>Subtotal</span>
+                    <span style={{ ...typography.bodyMd, color: THEME.colors.onSurface }}>KSh {Number(totalPrice).toLocaleString()}</span>
                   </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ ...typography.bodyMd, color: THEME.colors.onSurfaceVariant }}>Delivery Fee</span>
+                    <span style={{ ...typography.bodyMd, color: deliveryMethod === 'pickup' ? '#2ecc71' : THEME.colors.onSurface, fontWeight: 600 }}>
+                      {deliveryMethod === 'pickup' ? 'FREE' : `KSh 200`}
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ borderTop: `1px solid ${THEME.colors.border}`, paddingTop: '24px', marginBottom: '32px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontFamily: "'Bodoni Moda', serif", fontSize: '22px', fontWeight: 500 }}>Total</span>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '22px', fontWeight: 700, color: THEME.colors.secondary }}>
+                      KSh {Number(totalPrice + (deliveryMethod === 'delivery' ? 200 : 0)).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+
+                {/* M-Pesa */}
+                <div style={{ border: `1px solid ${THEME.colors.border}`, padding: '16px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#2ecc71', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <span style={{ color: '#fff', fontWeight: 700, fontSize: '12px' }}>M</span>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <p style={{ ...typography.labelSm, fontSize: '11px', color: THEME.colors.onSurface, marginBottom: '2px' }}>PAY WITH M-PESA</p>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: THEME.colors.onSurfaceVariant }}>Fast, secure, and local</p>
+                  </div>
+                  <span className="material-symbols-outlined" style={{ color: '#2ecc71', fontSize: '20px' }}>check_circle</span>
                 </div>
 
                 <button
                   type='submit'
-                  style={styles.submitBtn}
                   disabled={loading}
+                  style={{ ...components.btnPrimary, width: '100%', display: 'flex', gap: '8px' }}
                 >
-                  {loading ? 'PLACING ORDER...' : 'PLACE ORDER →'}
+                  {loading ? 'PROCESSING...' : 'COMPLETE ORDER →'}
                 </button>
-              </form>
-            </div>
-          )}
-        </motion.div>
 
-        {/* Order Summary */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          style={styles.summary}
-        >
-          <p style={styles.sectionTag}>ORDER SUMMARY</p>
-          <div style={styles.summaryItems}>
-            {cart.map(item => (
-              <div key={item.id} style={styles.summaryItem}>
-                <div style={styles.summaryItemInfo}>
-                  <p style={styles.summaryItemName}>{item.name}</p>
-                  <p style={styles.summaryItemQty}>x{item.quantity}</p>
+                <div style={{ marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: '14px', color: THEME.colors.onSurfaceVariant }}>lock</span>
+                  <span style={{ ...typography.labelSm, fontSize: '10px', color: THEME.colors.onSurfaceVariant }}>
+                    SECURE CHECKOUT POWERED BY SAFARICOM
+                  </span>
                 </div>
-                <span style={styles.summaryItemPrice}>
-                  KSh {Number(item.price * item.quantity).toLocaleString()}
-                </span>
               </div>
-            ))}
+            </motion.div>
+
           </div>
-          <div style={styles.summaryDivider} />
-          <div style={styles.summaryRow}>
-            <span>Subtotal</span>
-            <span>KSh {Number(totalPrice).toLocaleString()}</span>
-          </div>
-          <div style={styles.summaryRow}>
-            <span>Delivery</span>
-            <span>{deliveryMethod === 'delivery' ? 'KSh 200' : 'Free'}</span>
-          </div>
-          <div style={styles.summaryDivider} />
-          <div style={styles.summaryTotal}>
-            <span>Total</span>
-            <span>KSh {Number(totalPrice + (deliveryMethod === 'delivery' ? 200 : 0)).toLocaleString()}</span>
-          </div>
-        </motion.div>
+        </form>
       </div>
     </div>
   );
 };
-
-
 
 export default Checkout;
