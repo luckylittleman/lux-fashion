@@ -11,6 +11,7 @@ const Navbar = () => {
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -57,9 +58,13 @@ const Navbar = () => {
           margin: '0 auto',
         }}>
           {/* Left - Menu icon (mobile) */}
-          <button style={styles.iconBtn}>
-            <span className="material-symbols-outlined">menu</span>
-          </button>
+          {window.innerWidth >= 768 && (
+           <button style={styles.iconBtn} onClick={() => setMenuOpen(!menuOpen)}>
+              <span className="material-symbols-outlined">
+                 {menuOpen ? 'close' : 'menu'}
+               </span>
+            </button>
+          )}
 
           {/* Center - Logo */}
           <Link to='/' style={{
@@ -140,9 +145,92 @@ const Navbar = () => {
 
       {/* Bottom Navigation - Mobile only */}
       <BottomNav location={location} />
+
+      {/* Sidebar overlay */}
+      {menuOpen && (
+        <div
+          onClick={() => setMenuOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            zIndex: 90,
+          }}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        height: '100vh',
+        width: '280px',
+        backgroundColor: '#fff',
+        zIndex: 100,
+        transform: menuOpen ? 'translateX(0)' : 'translateX(-100%)',
+        transition: 'transform 0.3s ease',
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '24px',
+        boxShadow: menuOpen ? '4px 0 20px rgba(0,0,0,0.1)' : 'none',
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '48px' }}>
+          <span style={{ fontFamily: "'Bodoni Moda', serif", fontSize: '18px', fontWeight: 700, letterSpacing: '0.2em', color: THEME.colors.primary }}>
+            LUX FASHION
+          </span>
+          <button style={styles.iconBtn} onClick={() => setMenuOpen(false)}>
+            <span className="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+          {[
+            { label: 'Home', path: '/', icon: 'home' },
+            { label: 'Shop', path: '/shop', icon: 'storefront' },
+            { label: 'Men', path: '/shop?category=men', icon: 'man' },
+            { label: 'Women', path: '/shop?category=women', icon: 'woman' },
+            { label: 'Cart', path: '/cart', icon: 'shopping_bag' },
+            { label: 'Profile', path: '/profile', icon: 'person' },
+          ].map(item => (
+            <Link
+              key={item.path}
+              to={item.path}
+              onClick={() => setMenuOpen(false)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '16px',
+                padding: '16px 12px',
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '16px',
+                fontWeight: 500,
+                color: THEME.colors.onSurface,
+                borderBottom: `1px solid ${THEME.colors.border}`,
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: '20px', color: THEME.colors.secondary }}>
+                {item.icon}
+              </span>
+              {item.label}
+            </Link>
+          ))}
+        </div>
+
+        <div style={{ borderTop: `1px solid ${THEME.colors.border}`, paddingTop: '24px' }}>
+          <p style={{ ...typography.labelSm, color: THEME.colors.onSurfaceVariant, fontSize: '10px', marginBottom: '8px' }}>
+            EST. 2024 — Kisumu, KENYA
+          </p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: THEME.colors.onSurfaceVariant }}>
+            info@luxfashion.co.ke
+          </p>
+        </div>
+      </div>
+
     </>
   );
 };
+
 
 const BottomNav = ({ location }) => {
   const { totalItems } = useCart();
@@ -157,20 +245,20 @@ const BottomNav = ({ location }) => {
 
   return (
     <nav style={{
-      position: 'fixed',
-      bottom: 0,
-      left: 0,
-      width: '100%',
-      zIndex: 50,
-      backgroundColor: 'rgba(249,249,249,0.92)',
-      backdropFilter: 'blur(20px)',
-      borderTop: '1px solid #c4c7c7',
-      display: 'flex',
-      justifyContent: 'space-around',
-      alignItems: 'center',
-      height: '72px',
-      paddingBottom: '8px',
-    }}>
+  position: 'fixed',
+  bottom: 0,
+  left: 0,
+  width: '100%',
+  zIndex: 50,
+  backgroundColor: 'rgba(249,249,249,0.92)',
+  backdropFilter: 'blur(20px)',
+  borderTop: '1px solid #c4c7c7',
+  display: window.innerWidth < 768 ? 'flex' : 'none',
+  justifyContent: 'space-around',
+  alignItems: 'center',
+  height: '72px',
+  paddingBottom: '8px',
+}}>
       {tabs.map(tab => {
         const isActive = path === tab.path;
         return (

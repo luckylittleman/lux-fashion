@@ -53,7 +53,7 @@ const Home = () => {
               maxWidth: '600px',
             }}
           >
-            The Nairobi Collection
+            The Ultimate Collection
           </motion.h2>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -72,7 +72,7 @@ const Home = () => {
         <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 24px', marginBottom: '32px' }}>
           <h3 style={{ ...typography.headlineMd, color: THEME.colors.onSurface }}>CATEGORIES</h3>
         </div>
-        <div style={{ display: 'flex', gap: '16px', overflowX: 'auto', padding: '0 24px', scrollbarWidth: 'none' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 45vw)' : 'repeat(2, 1fr)', gap: '16px', padding: '0 24px', maxWidth: '1280px', margin: '0 auto' }}>
           {[
             {
               name: 'MEN',
@@ -88,7 +88,7 @@ const Home = () => {
             <Link
               key={cat.slug}
               to={`/shop?category=${cat.slug}`}
-              style={{ flexShrink: 0, width: isMobile ? '45vw' : '320px', cursor: 'pointer' }}
+              style={{ cursor: 'pointer' }}
             >
               <div style={{ aspectRatio: '4/5', overflow: 'hidden', marginBottom: '16px', position: 'relative' }}>
                 <img
@@ -108,7 +108,7 @@ const Home = () => {
       </section>
 
       {/* New Arrivals */}
-      <section style={{ padding: isMobile ? '48px 24px' : '64px 64px', backgroundColor: '#f3f3f4' }}>
+      <section style={{ padding: isMobile ? '48px 24px' : '64px', backgroundColor: '#f3f3f4' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '48px' }}>
             <div>
@@ -148,7 +148,7 @@ const Home = () => {
       </section>
 
       {/* Curated Section */}
-      <section style={{ padding: isMobile ? '64px 24px' : '96px 64px' }}>
+      <section style={{ padding: isMobile ? '64px 24px' : '96px' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
           <div style={{
             display: 'grid',
@@ -162,7 +162,7 @@ const Home = () => {
                 Curated for Your Distinct Taste
               </h2>
               <p style={{ ...typography.bodyLg, color: THEME.colors.onSurfaceVariant, marginBottom: '32px', lineHeight: '1.8' }}>
-                A hand-picked selection that bridges the gap between Nairobi's street elegance and international runway precision.
+                A hand-picked selection that bridges the gap between Kenya's street elegance and international runway precision.
               </p>
               <Link to='/shop' style={components.btnOutline}>
                 VIEW CURATED SELECTION
@@ -185,18 +185,6 @@ const Home = () => {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* Brand Quote */}
-      <section style={{ padding: isMobile ? '80px 24px' : '128px 64px', backgroundColor: '#1a1c1c', textAlign: 'center' }}>
-        <div style={{ maxWidth: '640px', margin: '0 auto' }}>
-          <p style={{ fontFamily: "'Bodoni Moda', serif", fontSize: isMobile ? '20px' : '24px', fontStyle: 'italic', color: '#fff', marginBottom: '32px', lineHeight: '1.6' }}>
-            "Style is a silent language. At Lux Fashion, we speak Nairobi's most elegant dialect."
-          </p>
-          <p style={{ ...typography.labelSm, color: 'rgba(255,255,255,0.4)', letterSpacing: '0.4em' }}>
-            EST. 2024 — NAIROBI
-          </p>
         </div>
       </section>
 

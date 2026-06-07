@@ -29,10 +29,10 @@ const Footer = () => {
             maxWidth: '560px',
             margin: '0 auto 20px',
           }}>
-            "Style is a silent language. At Lux Fashion, we speak Nairobi's most elegant dialect."
+            "Style is a silent language. At Lux Fashion, we speak Kenya's most elegant dialect."
           </p>
           <p style={{ ...typography.labelSm, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.4em' }}>
-            EST. 2024 — NAIROBI
+            EST. 2024 — KISUMU
           </p>
         </div>
 
@@ -57,7 +57,7 @@ const Footer = () => {
               LUX FASHION
             </h3>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, maxWidth: '240px' }}>
-              Premium Afro-chic clothing for the modern wardrobe. Rooted in Nairobi, worn worldwide.
+              Premium Afro-chic clothing for the modern wardrobe. Rooted in Kisumu, worn worldwide.
             </p>
           </div>
 
@@ -111,7 +111,7 @@ const Footer = () => {
             <h4 style={{ ...typography.labelSm, color: 'rgba(255,255,255,0.4)', marginBottom: '20px' }}>CONTACT</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {[
-                'Nairobi, Kenya',
+                'Kisumu, Kenya',
                 '+254 700 000 000',
                 'info@luxfashion.co.ke',
                 '09:00 – 18:00 EAT',
