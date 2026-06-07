@@ -1,79 +1,159 @@
 import { Link } from 'react-router-dom';
-import { THEME, styles } from '../theme';
+import { THEME, typography } from '../theme';
+import { useResponsive } from '../theme';
 
 const Footer = () => {
-  const socialLinks = [
-    { name: 'FACEBOOK', url: '#' },
-    { name: 'INSTAGRAM', url: '#' },
-    { name: 'TIKTOK', url: '#' },
-    { name: 'X', url: '#' },
-  ];
+  const { isMobile } = useResponsive();
 
   return (
-    <footer style={{ backgroundColor: '#080808', borderTop: `1px solid ${THEME.colors.border}`, padding: '64px 5% 32px 5%', color: THEME.colors.textSecondary, fontFamily: THEME.fonts.sans }}>
-      <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: '48px', justifyContent: 'space-between', marginBottom: '64px' }}>
-        <div style={{ flex: '1 1 300px' }}>
-          <h2 style={{ color: '#fff', fontSize: '24px', fontWeight: 900, letterSpacing: '4px', marginBottom: '16px', textTransform: 'uppercase' }}>LUX FASHION</h2>
-          <p style={{ fontSize: '14px', lineHeight: '1.8', color: THEME.colors.textSecondary, maxWidth: '280px' }}>
-            DEFINING ELITE SARTORIAL EXPRESSIONS FROM KISUMU TO THE WORLD.
+    <footer style={{
+      backgroundColor: THEME.colors.onSurface,
+      color: '#fff',
+      padding: isMobile ? '64px 24px 96px' : '80px 64px 64px',
+    }}>
+      <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+
+        {/* Quote */}
+        <div style={{
+          textAlign: 'center',
+          padding: isMobile ? '0 0 48px' : '0 0 64px',
+          borderBottom: '1px solid rgba(255,255,255,0.1)',
+          marginBottom: isMobile ? '48px' : '64px',
+        }}>
+          <p style={{
+            fontFamily: "'Bodoni Moda', serif",
+            fontSize: isMobile ? '18px' : '22px',
+            fontStyle: 'italic',
+            color: 'rgba(255,255,255,0.85)',
+            lineHeight: 1.8,
+            maxWidth: '560px',
+            margin: '0 auto 20px',
+          }}>
+            "Style is a silent language. At Lux Fashion, we speak Nairobi's most elegant dialect."
+          </p>
+          <p style={{ ...typography.labelSm, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.4em' }}>
+            EST. 2024 — NAIROBI
           </p>
         </div>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '48px', flex: '2 1 600px', justifyContent: 'space-between' }}>
-          <div style={{ flex: '1 1 150px' }}>
-            <h4 style={{ ...styles.labelUppercase('2px', '#fff'), marginBottom: '20px' }}>Shop</h4>
+        {/* Links Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr 1fr' : '2fr 1fr 1fr 1fr',
+          gap: isMobile ? '40px' : '48px',
+          marginBottom: isMobile ? '48px' : '64px',
+        }}>
+          {/* Brand */}
+          <div>
+            <h3 style={{
+              fontFamily: "'Bodoni Moda', serif",
+              fontSize: '22px',
+              fontWeight: 700,
+              letterSpacing: '0.2em',
+              color: '#fff',
+              marginBottom: '16px',
+              textTransform: 'uppercase',
+            }}>
+              LUX FASHION
+            </h3>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, maxWidth: '240px' }}>
+              Premium Afro-chic clothing for the modern wardrobe. Rooted in Nairobi, worn worldwide.
+            </p>
+          </div>
+
+          {/* Shop */}
+          <div>
+            <h4 style={{ ...typography.labelSm, color: 'rgba(255,255,255,0.4)', marginBottom: '20px' }}>SHOP</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <Link to='/shop' style={linkStyle}>ALL PRODUCTS</Link>
-              <Link to='/shop?category=men' style={linkStyle}>MEN'S COLLECTION</Link>
-              <Link to='/shop?category=women' style={linkStyle}>WOMEN'S COLLECTION</Link>
+              {[
+                { label: 'All Products', to: '/shop' },
+                { label: "Men's Collection", to: '/shop?category=men' },
+                { label: "Women's Collection", to: '/shop?category=women' },
+              ].map(link => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: 'rgba(255,255,255,0.6)' }}
+                  onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+                  onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </div>
 
-          <div style={{ flex: '1 1 150px' }}>
-            <h4 style={{ ...styles.labelUppercase('2px', '#fff'), marginBottom: '20px' }}>Account</h4>
+          {/* Account */}
+          <div>
+            <h4 style={{ ...typography.labelSm, color: 'rgba(255,255,255,0.4)', marginBottom: '20px' }}>ACCOUNT</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <Link to='/login' style={linkStyle}>LOG IN</Link>
-              <Link to='/signup' style={linkStyle}>SIGN UP</Link>
-              <Link to='/cart' style={linkStyle}>MY CART</Link>
+              {[
+                { label: 'Log In', to: '/login' },
+                { label: 'Sign Up', to: '/signup' },
+                { label: 'My Cart', to: '/cart' },
+                { label: 'My Profile', to: '/profile' },
+              ].map(link => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: 'rgba(255,255,255,0.6)' }}
+                  onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+                  onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.6)'}
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
           </div>
 
-          <div style={{ flex: '1 1 200px' }}>
-            <h4 style={{ ...styles.labelUppercase('2px', '#fff'), marginBottom: '20px' }}>Contact</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13px' }}>
-              <p style={{ color: THEME.colors.textSecondary }}>HQ: <span style={{ color: '#fff' }}>KISUMU, KENYA</span></p>
-              <p style={{ color: THEME.colors.textSecondary }}>PHONE: <span style={{ color: '#fff' }}>+254 725267768</span></p>
-              <p style={{ color: THEME.colors.textSecondary }}>EMAIL: <span style={{ color: '#fff' }}>info@luxfashion.co.ke</span></p>
-              <p style={{ color: THEME.colors.textSecondary }}>HOURS: <span style={{ color: '#fff' }}>09:00 - 18:00 (EAT)</span></p>
+          {/* Contact */}
+          <div>
+            <h4 style={{ ...typography.labelSm, color: 'rgba(255,255,255,0.4)', marginBottom: '20px' }}>CONTACT</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {[
+                'Nairobi, Kenya',
+                '+254 700 000 000',
+                'info@luxfashion.co.ke',
+                '09:00 – 18:00 EAT',
+              ].map((item, i) => (
+                <p key={i} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '14px', color: 'rgba(255,255,255,0.6)' }}>
+                  {item}
+                </p>
+              ))}
             </div>
           </div>
         </div>
-      </div>
 
-      <div style={{ maxWidth: '1400px', margin: '0 auto', borderTop: `1px solid ${THEME.colors.border}`, paddingTop: '32px', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
-        <div style={{ fontSize: '11px', fontFamily: THEME.fonts.mono, color: THEME.colors.textMuted }}>
-          © {new Date().getFullYear()} LUX FASHION. ALL RIGHTS RESERVED.
-        </div>
-        <div style={{ display: 'flex', gap: '24px' }}>
-          {socialLinks.map(social => (
-            <a key={social.name} href={social.url} style={{ fontFamily: THEME.fonts.mono, fontSize: '11px', color: THEME.colors.textMuted, textTransform: 'uppercase', textDecoration: 'none', letterSpacing: '2px', transition: 'color 0.2s ease' }}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
-              onMouseLeave={(e) => e.currentTarget.style.color = THEME.colors.textMuted}
-            >
-              {social.name}
-            </a>
-          ))}
+        {/* Bottom */}
+        <div style={{
+          borderTop: '1px solid rgba(255,255,255,0.1)',
+          paddingTop: '32px',
+          display: 'flex',
+          flexDirection: isMobile ? 'column' : 'row',
+          justifyContent: 'space-between',
+          alignItems: isMobile ? 'flex-start' : 'center',
+          gap: '16px',
+        }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em' }}>
+            © {new Date().getFullYear()} LUX FASHION. ALL RIGHTS RESERVED.
+          </p>
+          <div style={{ display: 'flex', gap: '24px' }}>
+            {['FACEBOOK', 'INSTAGRAM', 'TIKTOK', 'X'].map(social => (
+              <a
+                key={social}
+                href='#'
+                style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.3)', letterSpacing: '0.1em', textDecoration: 'none' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#fff'}
+                onMouseLeave={e => e.currentTarget.style.color = 'rgba(255,255,255,0.3)'}
+              >
+                {social}
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </footer>
   );
-};
-
-const linkStyle = {
-  fontFamily: 'sans-serif',
-  fontSize: '13px',
-  color: '#888888',
-  textDecoration: 'none',
 };
 
 export default Footer;
