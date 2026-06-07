@@ -2,233 +2,118 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import { THEME, typography, components, useResponsive } from '../theme';
 
 const OrderSuccess = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { isMobile } = useResponsive();
 
   useEffect(() => {
     axios.get(`http://127.0.0.1:8000/api/orders/${id}/`)
-      .then(res => {
-        setOrder(res.data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
+      .then(res => { setOrder(res.data); setLoading(false); })
+      .catch(() => setLoading(false));
   }, [id]);
 
   if (loading) return (
-    <div style={styles.loading}>
-      <p style={styles.loadingText}>Loading...</p>
+    <div style={{ backgroundColor: THEME.colors.bg, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <p style={{ ...typography.bodyMd, color: THEME.colors.onSurfaceVariant }}>Loading...</p>
     </div>
   );
 
   return (
-    <div style={styles.page}>
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        style={styles.card}
-      >
+    <div style={{ backgroundColor: THEME.colors.bg, minHeight: '100vh', paddingTop: '64px', paddingBottom: isMobile ? '72px' : '0' }}>
+      <div style={{ maxWidth: '640px', margin: '0 auto', padding: isMobile ? '48px 24px' : '80px 24px' }}>
         <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          style={styles.iconWrapper}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
         >
-          <span style={styles.icon}>✓</span>
-        </motion.div>
+          {/* Success Icon */}
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 0.5, delay: 0.2, type: 'spring' }}
+            style={{
+              width: '72px',
+              height: '72px',
+              borderRadius: '50%',
+              backgroundColor: '#2ecc71',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '32px',
+            }}
+          >
+            <span className="material-symbols-outlined" style={{ color: '#fff', fontSize: '36px' }}>check</span>
+          </motion.div>
 
-        <p style={styles.tag}>ORDER CONFIRMED</p>
-        <h1 style={styles.title}>Thank you, {order?.full_name?.split(' ')[0]}!</h1>
-        <p style={styles.subtitle}>
-          Your order #{order?.id} has been placed successfully.
-          We'll be in touch shortly.
-        </p>
+          <p style={{ ...typography.labelSm, color: '#2ecc71', marginBottom: '12px' }}>ORDER CONFIRMED</p>
+          <h1 style={{ fontFamily: "'Bodoni Moda', serif", fontSize: isMobile ? '36px' : '48px', fontWeight: 600, color: THEME.colors.onSurface, marginBottom: '12px' }}>
+            Thank you, {order?.full_name?.split(' ')[0]}!
+          </h1>
+          <p style={{ ...typography.bodyLg, color: THEME.colors.onSurfaceVariant, marginBottom: '48px', lineHeight: 1.8 }}>
+            Your order #{order?.id} has been placed successfully. We'll be in touch shortly.
+          </p>
 
-        <div style={styles.details}>
-          <div style={styles.detailRow}>
-            <span style={styles.detailLabel}>ORDER ID</span>
-            <span style={styles.detailValue}>#{order?.id}</span>
-          </div>
-          <div style={styles.detailDivider} />
-          <div style={styles.detailRow}>
-            <span style={styles.detailLabel}>PHONE</span>
-            <span style={styles.detailValue}>{order?.phone}</span>
-          </div>
-          <div style={styles.detailDivider} />
-          <div style={styles.detailRow}>
-            <span style={styles.detailLabel}>ADDRESS</span>
-            <span style={styles.detailValue}>{order?.address}, {order?.county}</span>
-          </div>
-          <div style={styles.detailDivider} />
-          <div style={styles.detailRow}>
-            <span style={styles.detailLabel}>STATUS</span>
-            <span style={styles.statusBadge}>{order?.status?.toUpperCase()}</span>
-          </div>
-          <div style={styles.detailDivider} />
-          <div style={styles.detailRow}>
-            <span style={styles.detailLabel}>TOTAL PAID</span>
-            <span style={styles.detailValue}>
-              KSh {Number(order?.total_price).toLocaleString()}
-            </span>
-          </div>
-        </div>
-
-        <div style={styles.items}>
-          <p style={styles.itemsTag}>ITEMS ORDERED</p>
-          {order?.items.map((item, index) => (
-            <div key={index} style={styles.item}>
-              <span style={styles.itemName}>Product #{item.product} x{item.quantity}</span>
-              <span style={styles.itemPrice}>
-                KSh {Number(item.price * item.quantity).toLocaleString()}
+          {/* Order Details */}
+          <div style={{ backgroundColor: THEME.colors.surfaceContainerLow, padding: '32px', marginBottom: '32px' }}>
+            <h3 style={{ fontFamily: "'Bodoni Moda', serif", fontSize: '20px', fontWeight: 500, color: THEME.colors.onSurface, marginBottom: '24px' }}>
+              Order Details
+            </h3>
+            {[
+              { label: 'ORDER ID', value: `#${order?.id}` },
+              { label: 'PHONE', value: order?.phone },
+              { label: 'ADDRESS', value: `${order?.address}, ${order?.county}` },
+              { label: 'TOTAL PAID', value: `KSh ${Number(order?.total_price).toLocaleString()}` },
+            ].map((row, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: i < 3 ? `1px solid ${THEME.colors.border}` : 'none' }}>
+                <span style={{ ...typography.labelSm, fontSize: '11px', color: THEME.colors.onSurfaceVariant }}>{row.label}</span>
+                <span style={{ ...typography.bodyMd, color: THEME.colors.onSurface, fontWeight: 500 }}>{row.value}</span>
+              </div>
+            ))}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '12px' }}>
+              <span style={{ ...typography.labelSm, fontSize: '11px', color: THEME.colors.onSurfaceVariant }}>STATUS</span>
+              <span style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: '11px',
+                fontWeight: 700,
+                color: '#f39c12',
+                border: '1px solid #f39c12',
+                padding: '4px 12px',
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+              }}>
+                {order?.status}
               </span>
             </div>
-          ))}
-        </div>
+          </div>
 
-        <Link to='/' style={styles.homeBtn}>CONTINUE SHOPPING →</Link>
-      </motion.div>
+          {/* Items */}
+          <div style={{ marginBottom: '48px' }}>
+            <h3 style={{ fontFamily: "'Bodoni Moda', serif", fontSize: '20px', fontWeight: 500, color: THEME.colors.onSurface, marginBottom: '16px' }}>
+              Items Ordered
+            </h3>
+            {order?.items.map((item, i) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', borderBottom: `1px solid ${THEME.colors.border}` }}>
+                <span style={{ ...typography.bodyMd, color: THEME.colors.onSurfaceVariant }}>
+                  Product #{item.product} × {item.quantity}
+                </span>
+                <span style={{ ...typography.bodyMd, color: THEME.colors.onSurface, fontWeight: 500 }}>
+                  KSh {Number(item.price * item.quantity).toLocaleString()}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <Link to='/' style={{ ...components.btnPrimary, display: 'inline-flex' }}>
+            CONTINUE SHOPPING →
+          </Link>
+        </motion.div>
+      </div>
     </div>
   );
-};
-
-const styles = {
-  page: {
-    backgroundColor: '#0a0a0a',
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '60px 40px',
-  },
-  loading: {
-    backgroundColor: '#0a0a0a',
-    minHeight: '100vh',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loadingText: {
-    color: '#555',
-    fontSize: '14px',
-    letterSpacing: '2px',
-  },
-  card: {
-    backgroundColor: '#111',
-    border: '1px solid #1a1a1a',
-    padding: '60px',
-    maxWidth: '560px',
-    width: '100%',
-    textAlign: 'center',
-  },
-  iconWrapper: {
-    width: '64px',
-    height: '64px',
-    borderRadius: '50%',
-    backgroundColor: '#2ecc71',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: '0 auto 28px',
-  },
-  icon: {
-    fontSize: '28px',
-    color: '#fff',
-    fontWeight: '700',
-  },
-  tag: {
-    fontSize: '11px',
-    letterSpacing: '4px',
-    color: '#2ecc71',
-    marginBottom: '16px',
-  },
-  title: {
-    fontSize: '32px',
-    fontWeight: '900',
-    color: '#fff',
-    marginBottom: '12px',
-    letterSpacing: '-0.5px',
-  },
-  subtitle: {
-    fontSize: '14px',
-    color: '#666',
-    lineHeight: 1.8,
-    marginBottom: '40px',
-  },
-  details: {
-    backgroundColor: '#0a0a0a',
-    border: '1px solid #1a1a1a',
-    padding: '24px',
-    marginBottom: '32px',
-    textAlign: 'left',
-  },
-  detailRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '8px 0',
-  },
-  detailDivider: {
-    height: '1px',
-    backgroundColor: '#1a1a1a',
-  },
-  detailLabel: {
-    fontSize: '10px',
-    letterSpacing: '3px',
-    color: '#555',
-  },
-  detailValue: {
-    fontSize: '13px',
-    color: '#fff',
-    fontWeight: '500',
-  },
-  statusBadge: {
-    fontSize: '10px',
-    letterSpacing: '2px',
-    color: '#f39c12',
-    border: '1px solid #f39c12',
-    padding: '3px 10px',
-  },
-  items: {
-    textAlign: 'left',
-    marginBottom: '40px',
-  },
-  itemsTag: {
-    fontSize: '11px',
-    letterSpacing: '4px',
-    color: '#555',
-    marginBottom: '16px',
-  },
-  item: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    fontSize: '13px',
-    color: '#888',
-    padding: '10px 0',
-    borderBottom: '1px solid #1a1a1a',
-  },
-  itemName: {
-    color: '#ccc',
-  },
-  itemPrice: {
-    color: '#fff',
-    fontWeight: '500',
-  },
-  homeBtn: {
-    display: 'inline-block',
-    backgroundColor: '#fff',
-    color: '#000',
-    padding: '14px 40px',
-    fontSize: '12px',
-    fontWeight: '700',
-    letterSpacing: '2px',
-    borderRadius: '2px',
-  },
 };
 
 export default OrderSuccess;
