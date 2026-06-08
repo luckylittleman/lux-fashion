@@ -36,6 +36,7 @@ const Checkout = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
     const orderData = {
       full_name: form.full_name,
       email: form.email,
@@ -50,10 +51,24 @@ const Checkout = () => {
         price: item.price,
       })),
     };
+
     try {
-      const res = await axios.post('http://127.0.0.1:8000/api/orders/', orderData);
+      // Step 1 - Create the order
+      const orderRes = await axios.post('http://127.0.0.1:8000/api/orders/', orderData);
+      const orderId = orderRes.data.id;
+
+      // Step 2 - Initiate STK push
+      const mpesaRes = await axios.post('http://127.0.0.1:8000/api/mpesa/stkpush/', {
+        phone_number: form.mpesa_phone || form.phone,
+        order_id: orderId,
+      });
+
+      const checkoutRequestId = mpesaRes.data.checkout_request_id;
       clearCart();
-      navigate(`/order-success/${res.data.id}`);
+
+      // Step 3 - Navigate to success page
+      navigate(`/order-success/${orderId}?checkout_request_id=${checkoutRequestId}`);
+
     } catch (err) {
       console.error(err);
       alert('Something went wrong. Please try again.');
@@ -61,11 +76,29 @@ const Checkout = () => {
     }
   };
 
+  const inputStyle = {
+    width: '100%',
+    backgroundColor: 'transparent',
+    border: 'none',
+    borderBottom: `1px solid ${THEME.colors.border}`,
+    padding: '12px 0',
+    fontFamily: "'DM Sans', sans-serif",
+    fontSize: '16px',
+    color: THEME.colors.onSurface,
+    outline: 'none',
+  };
+
+  const labelStyle = {
+    ...typography.labelSm,
+    fontSize: '11px',
+    color: THEME.colors.onSurfaceVariant,
+    display: 'block',
+    marginBottom: '8px',
+  };
+
   const InputField = ({ name, label, placeholder, type = 'text', required = true }) => (
     <div style={{ marginBottom: '24px' }}>
-      <label style={{ ...typography.labelSm, fontSize: '11px', color: THEME.colors.onSurfaceVariant, display: 'block', marginBottom: '8px' }}>
-        {label}
-      </label>
+      <label style={labelStyle}>{label}</label>
       <input
         type={type}
         name={name}
@@ -73,17 +106,7 @@ const Checkout = () => {
         value={form[name]}
         onChange={handleChange}
         required={required}
-        style={{
-          width: '100%',
-          backgroundColor: 'transparent',
-          border: 'none',
-          borderBottom: `1px solid ${THEME.colors.border}`,
-          padding: '12px 0',
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: '16px',
-          color: THEME.colors.onSurface,
-          outline: 'none',
-        }}
+        style={inputStyle}
         onFocus={e => e.target.style.borderBottomColor = '#000'}
         onBlur={e => e.target.style.borderBottomColor = THEME.colors.border}
       />
@@ -108,7 +131,7 @@ const Checkout = () => {
                   Refined selections for the modern silhouette.
                 </p>
 
-                {cart.map((item, i) => (
+                {cart.map((item) => (
                   <div key={item.id} style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: '16px', marginBottom: '24px', paddingBottom: '24px', borderBottom: `1px solid ${THEME.colors.border}` }}>
                     <div style={{ aspectRatio: '4/5', overflow: 'hidden', backgroundColor: '#e8e8e8' }}>
                       {item.image ? (
@@ -183,28 +206,15 @@ const Checkout = () => {
                   <>
                     <InputField name='full_name' label='FULL NAME' placeholder='John Kamau' />
                     <InputField name='email' label='EMAIL ADDRESS' placeholder='john@email.com' type='email' />
-                    <InputField name='phone' label='PHONE NUMBER (M-PESA)' placeholder='07XXXXXXXX' />
+                    <InputField name='phone' label='PHONE NUMBER' placeholder='07XXXXXXXX' />
                     <InputField name='address' label='STREET ADDRESS / APARTMENT' placeholder='Moi Avenue, Apt 4B' />
                     <div style={{ marginBottom: '24px' }}>
-                      <label style={{ ...typography.labelSm, fontSize: '11px', color: THEME.colors.onSurfaceVariant, display: 'block', marginBottom: '8px' }}>
-                        COUNTY
-                      </label>
+                      <label style={labelStyle}>COUNTY</label>
                       <select
                         name='county'
                         value={form.county}
                         onChange={handleChange}
-                        style={{
-                          width: '100%',
-                          backgroundColor: 'transparent',
-                          border: 'none',
-                          borderBottom: `1px solid ${THEME.colors.border}`,
-                          padding: '12px 0',
-                          fontFamily: "'DM Sans', sans-serif",
-                          fontSize: '16px',
-                          color: THEME.colors.onSurface,
-                          outline: 'none',
-                          cursor: 'pointer',
-                        }}
+                        style={{ ...inputStyle, cursor: 'pointer' }}
                       >
                         {COUNTIES.map(c => <option key={c} value={c}>{c}</option>)}
                       </select>
@@ -237,10 +247,7 @@ const Checkout = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              style={{
-                position: isMobile ? 'static' : 'sticky',
-                top: '80px',
-              }}
+              style={{ position: isMobile ? 'static' : 'sticky', top: '80px' }}
             >
               <div style={{ backgroundColor: THEME.colors.surfaceContainerLow, padding: '32px' }}>
                 <h3 style={{ fontFamily: "'Bodoni Moda', serif", fontSize: '24px', fontWeight: 500, color: THEME.colors.onSurface, marginBottom: '24px' }}>
@@ -255,7 +262,7 @@ const Checkout = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ ...typography.bodyMd, color: THEME.colors.onSurfaceVariant }}>Delivery Fee</span>
                     <span style={{ ...typography.bodyMd, color: deliveryMethod === 'pickup' ? '#2ecc71' : THEME.colors.onSurface, fontWeight: 600 }}>
-                      {deliveryMethod === 'pickup' ? 'FREE' : `KSh 200`}
+                      {deliveryMethod === 'pickup' ? 'FREE' : 'KSh 200'}
                     </span>
                   </div>
                 </div>
@@ -269,16 +276,37 @@ const Checkout = () => {
                   </div>
                 </div>
 
-                {/* M-Pesa */}
-                <div style={{ border: `1px solid ${THEME.colors.border}`, padding: '16px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#2ecc71', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <span style={{ color: '#fff', fontWeight: 700, fontSize: '12px' }}>M</span>
+                {/* M-Pesa Section */}
+                <div style={{ border: `1px solid ${THEME.colors.border}`, padding: '20px', marginBottom: '24px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#2ecc71', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <span style={{ color: '#fff', fontWeight: 700, fontSize: '12px' }}>M</span>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ ...typography.labelSm, fontSize: '11px', color: THEME.colors.onSurface, marginBottom: '2px' }}>PAY WITH M-PESA</p>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: THEME.colors.onSurfaceVariant }}>Fast, secure, and local</p>
+                    </div>
+                    <span className="material-symbols-outlined" style={{ color: '#2ecc71', fontSize: '20px' }}>check_circle</span>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <p style={{ ...typography.labelSm, fontSize: '11px', color: THEME.colors.onSurface, marginBottom: '2px' }}>PAY WITH M-PESA</p>
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: THEME.colors.onSurfaceVariant }}>Fast, secure, and local</p>
+
+                  {/* M-Pesa phone number input */}
+                  <div>
+                    <label style={labelStyle}>M-PESA PHONE NUMBER</label>
+                    <input
+                      type='text'
+                      name='mpesa_phone'
+                      placeholder='07XXXXXXXX'
+                      value={form.mpesa_phone}
+                      onChange={handleChange}
+                      required
+                      style={inputStyle}
+                      onFocus={e => e.target.style.borderBottomColor = '#000'}
+                      onBlur={e => e.target.style.borderBottomColor = THEME.colors.border}
+                    />
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '11px', color: THEME.colors.onSurfaceVariant, marginTop: '8px' }}>
+                      You will receive an STK push on this number to complete payment.
+                    </p>
                   </div>
-                  <span className="material-symbols-outlined" style={{ color: '#2ecc71', fontSize: '20px' }}>check_circle</span>
                 </div>
 
                 <button
