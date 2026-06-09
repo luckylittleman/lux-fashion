@@ -12,6 +12,43 @@ const COUNTIES = [
   'Kakamega', 'Garissa', 'Embu', 'Malindi', 'Kitale',
 ];
 
+const inputStyle = {
+    width: '100%',
+    backgroundColor: 'transparent',
+    border: 'none',
+    borderBottom: `1px solid ${THEME.colors.border}`,
+    padding: '12px 0',
+    fontFamily: "'DM Sans', sans-serif",
+    fontSize: '16px',
+    color: THEME.colors.onSurface,
+    outline: 'none',
+};
+
+const labelStyle = {
+    ...typography.labelSm,
+    fontSize: '11px',
+    color: THEME.colors.onSurfaceVariant,
+    display: 'block',
+    marginBottom: '8px',
+};
+
+const InputField = ({ name, label, placeholder, type = 'text', required = true, value, onChange}) => (
+    <div style={{ marginBottom: '24px' }}>
+      <label style={labelStyle}>{label}</label>
+      <input
+        type={type}
+        name={name}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        required={required}
+        style={inputStyle}
+        onFocus={e => e.target.style.borderBottomColor = '#000'}
+        onBlur={e => e.target.style.borderBottomColor = THEME.colors.border}
+      />
+    </div>
+);
+
 const Checkout = () => {
   const { cart, totalPrice, clearCart } = useCart();
   const { user } = useAuth();
@@ -42,7 +79,7 @@ const Checkout = () => {
       email: form.email,
       phone: form.phone,
       address: deliveryMethod === 'pickup' ? 'Store Pickup' : form.address,
-      county: deliveryMethod === 'pickup' ? 'Nairobi' : form.county,
+      county: deliveryMethod === 'pickup' ? 'Kisumu' : form.county,
       postal_code: form.postal_code,
       total_price: totalPrice + (deliveryMethod === 'delivery' ? 200 : 0),
       items: cart.map(item => ({
@@ -76,42 +113,9 @@ const Checkout = () => {
     }
   };
 
-  const inputStyle = {
-    width: '100%',
-    backgroundColor: 'transparent',
-    border: 'none',
-    borderBottom: `1px solid ${THEME.colors.border}`,
-    padding: '12px 0',
-    fontFamily: "'DM Sans', sans-serif",
-    fontSize: '16px',
-    color: THEME.colors.onSurface,
-    outline: 'none',
-  };
+  
 
-  const labelStyle = {
-    ...typography.labelSm,
-    fontSize: '11px',
-    color: THEME.colors.onSurfaceVariant,
-    display: 'block',
-    marginBottom: '8px',
-  };
-
-  const InputField = ({ name, label, placeholder, type = 'text', required = true }) => (
-    <div style={{ marginBottom: '24px' }}>
-      <label style={labelStyle}>{label}</label>
-      <input
-        type={type}
-        name={name}
-        placeholder={placeholder}
-        value={form[name]}
-        onChange={handleChange}
-        required={required}
-        style={inputStyle}
-        onFocus={e => e.target.style.borderBottomColor = '#000'}
-        onBlur={e => e.target.style.borderBottomColor = THEME.colors.border}
-      />
-    </div>
-  );
+ 
 
   return (
     <div style={{ backgroundColor: THEME.colors.bg, minHeight: '100vh', paddingTop: '64px', paddingBottom: isMobile ? '72px' : '0' }}>
@@ -204,10 +208,10 @@ const Checkout = () => {
 
                 {deliveryMethod === 'delivery' ? (
                   <>
-                    <InputField name='full_name' label='FULL NAME' placeholder='John Kamau' />
-                    <InputField name='email' label='EMAIL ADDRESS' placeholder='john@email.com' type='email' />
-                    <InputField name='phone' label='PHONE NUMBER' placeholder='07XXXXXXXX' />
-                    <InputField name='address' label='STREET ADDRESS / APARTMENT' placeholder='Moi Avenue, Apt 4B' />
+                    <InputField name='full_name' label='FULL NAME' placeholder='John Kamau'  value={form.full_name} onChange={handleChange} />
+                    <InputField name='email' label='EMAIL ADDRESS' placeholder='john@email.com' type='email' value={form.email} onChange={handleChange} />
+                    <InputField name='phone' label='PHONE NUMBER' placeholder='07XXXXXXXX' value={form.phone} onChange={handleChange} />
+                    <InputField name='address' label='STREET ADDRESS / APARTMENT' placeholder='Moi Avenue, Apt 4B' value={form.address} onChange={handleChange} />
                     <div style={{ marginBottom: '24px' }}>
                       <label style={labelStyle}>COUNTY</label>
                       <select
@@ -219,7 +223,7 @@ const Checkout = () => {
                         {COUNTIES.map(c => <option key={c} value={c}>{c}</option>)}
                       </select>
                     </div>
-                    <InputField name='postal_code' label='POSTAL CODE' placeholder='00100' required={false} />
+                    <InputField name='postal_code' label='POSTAL CODE' placeholder='00100' required={false} value={form.postal_code} onChange={handleChange} />
                   </>
                 ) : (
                   <div style={{ backgroundColor: THEME.colors.surfaceContainerLow, padding: '24px', marginBottom: '24px' }}>
@@ -227,15 +231,15 @@ const Checkout = () => {
                     <p style={{ fontFamily: "'Bodoni Moda', serif", fontSize: '18px', fontWeight: 500, color: THEME.colors.onSurface, marginBottom: '8px' }}>
                       Lux Fashion Flagship
                     </p>
-                    <p style={{ ...typography.bodyMd, color: THEME.colors.onSurfaceVariant, marginBottom: '4px' }}>📍 Nairobi, Kenya</p>
+                    <p style={{ ...typography.bodyMd, color: THEME.colors.onSurfaceVariant, marginBottom: '4px' }}>📍 Kisumu, Kenya</p>
                     <p style={{ ...typography.bodyMd, color: THEME.colors.onSurfaceVariant, marginBottom: '4px' }}>🕐 Mon–Sat: 9:00 AM – 7:00 PM</p>
                     <p style={{ ...typography.bodyMd, color: THEME.colors.onSurfaceVariant }}>🕐 Sun: 11:00 AM – 5:00 PM</p>
                     <div style={{ height: '160px', backgroundColor: '#e8e8e8', marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <p style={{ ...typography.labelSm, color: THEME.colors.onSurfaceVariant }}>MAP COMING SOON</p>
                     </div>
                     <div style={{ marginTop: '24px' }}>
-                      <InputField name='full_name' label='FULL NAME' placeholder='John Kamau' />
-                      <InputField name='phone' label='PHONE NUMBER' placeholder='07XXXXXXXX' />
+                      <InputField name='full_name' label='FULL NAME' placeholder='John Kamau' value={form.full_name} onChange={handleChange} />
+                      <InputField name='phone' label='PHONE NUMBER' placeholder='07XXXXXXXX' value={form.phone} onChange={handleChange} />
                     </div>
                   </div>
                 )}
