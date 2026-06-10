@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import { THEME, typography } from '../theme';
 import { useResponsive } from '../theme';
+import { useAuth } from '../context/AuthContext';
 
 const Footer = () => {
   const { isMobile } = useResponsive();
+  const { user } = useAuth();
 
   return (
     <footer style={{
@@ -87,12 +89,14 @@ const Footer = () => {
           <div>
             <h4 style={{ ...typography.labelSm, color: 'rgba(255,255,255,0.4)', marginBottom: '20px' }}>ACCOUNT</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {[
+            {(user ? [
+                { label:'My Cart', to: '/cart'},
+                { label: 'My Profile', to: '/profile' },
+              ] : [
                 { label: 'Log In', to: '/login' },
                 { label: 'Sign Up', to: '/signup' },
                 { label: 'My Cart', to: '/cart' },
-                { label: 'My Profile', to: '/profile' },
-              ].map(link => (
+              ]).map(link => (
                 <Link
                   key={link.to}
                   to={link.to}

@@ -1,16 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { THEME, typography, components } from '../theme';
 
+
 const Login = () => {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
   const [method, setMethod] = useState('email');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ identifier: '', password: '' });
+
+  useEffect(() => {
+    if (user) navigate('/');
+  }, [user, navigate]);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -25,6 +31,25 @@ const Login = () => {
       setError('Invalid email/phone or password. Please try again.');
       setLoading(false);
     }
+  };
+
+  const inputStyle = {
+    flex: 1,
+    backgroundColor: 'transparent',
+    border: 'none',
+    padding: '12px 0',
+    fontFamily: "'DM Sans', sans-serif",
+    fontSize: '16px',
+    color: THEME.colors.onSurface,
+    outline: 'none',
+  };
+
+  const labelStyle = {
+    ...typography.labelSm,
+    fontSize: '11px',
+    color: THEME.colors.onSurfaceVariant,
+    display: 'block',
+    marginBottom: '8px',
   };
 
   return (
@@ -61,18 +86,12 @@ const Login = () => {
               type='button'
               onClick={() => { setMethod(m); setForm({ identifier: '', password: '' }); }}
               style={{
-                flex: 1,
-                padding: '12px',
-                border: 'none',
+                flex: 1, padding: '12px', border: 'none',
                 backgroundColor: method === m ? '#000' : 'transparent',
                 color: method === m ? '#fff' : THEME.colors.onSurfaceVariant,
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: '12px',
-                fontWeight: 700,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
+                fontFamily: "'DM Sans', sans-serif", fontSize: '12px',
+                fontWeight: 700, letterSpacing: '0.1em',
+                textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s',
               }}
             >
               {m.toUpperCase()}
@@ -84,79 +103,64 @@ const Login = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            style={{
-              backgroundColor: '#ffdad6',
-              color: '#93000a',
-              padding: '12px 16px',
-              fontSize: '13px',
-              fontFamily: "'DM Sans', sans-serif",
-              marginBottom: '24px',
-              border: '1px solid #ffb4ab',
-            }}
+            style={{ backgroundColor: '#ffdad6', color: '#93000a', padding: '12px 16px', fontSize: '13px', fontFamily: "'DM Sans', sans-serif", marginBottom: '24px', border: '1px solid #ffb4ab' }}
           >
             {error}
           </motion.div>
         )}
 
         <form onSubmit={handleSubmit}>
+          {/* Identifier field */}
           <div style={{ marginBottom: '24px' }}>
-            <label style={{ ...typography.labelSm, fontSize: '11px', color: THEME.colors.onSurfaceVariant, display: 'block', marginBottom: '8px' }}>
+            <label style={labelStyle}>
               {method === 'email' ? 'EMAIL ADDRESS' : 'PHONE NUMBER'}
             </label>
-            <input
-              type={method === 'email' ? 'email' : 'text'}
-              name='identifier'
-              placeholder={method === 'email' ? 'john@email.com' : '07XXXXXXXX'}
-              value={form.identifier}
-              onChange={handleChange}
-              required
-              style={{
-                width: '100%',
-                backgroundColor: 'transparent',
-                border: 'none',
-                borderBottom: `1px solid ${THEME.colors.border}`,
-                padding: '12px 0',
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: '16px',
-                color: THEME.colors.onSurface,
-                outline: 'none',
-              }}
-              onFocus={e => e.target.style.borderBottomColor = '#000'}
-              onBlur={e => e.target.style.borderBottomColor = THEME.colors.border}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', borderBottom: `1px solid ${THEME.colors.border}` }}>
+              <input
+                type={method === 'email' ? 'email' : 'text'}
+                name='identifier'
+                placeholder={method === 'email' ? 'john@email.com' : '07XXXXXXXX'}
+                value={form.identifier}
+                onChange={handleChange}
+                required
+                style={inputStyle}
+                onFocus={e => e.parentNode.style.borderBottomColor = '#000'}
+                onBlur={e => e.parentNode.style.borderBottomColor = THEME.colors.border}
+              />
+            </div>
           </div>
 
-          <div style={{ marginBottom: '40px' }}>
-            <label style={{ ...typography.labelSm, fontSize: '11px', color: THEME.colors.onSurfaceVariant, display: 'block', marginBottom: '8px' }}>
-              PASSWORD
-            </label>
-            <input
-              type='password'
-              name='password'
-              placeholder='Enter your password'
-              value={form.password}
-              onChange={handleChange}
-              required
-              style={{
-                width: '100%',
-                backgroundColor: 'transparent',
-                border: 'none',
-                borderBottom: `1px solid ${THEME.colors.border}`,
-                padding: '12px 0',
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: '16px',
-                color: THEME.colors.onSurface,
-                outline: 'none',
-              }}
-              onFocus={e => e.target.style.borderBottomColor = '#000'}
-              onBlur={e => e.target.style.borderBottomColor = THEME.colors.border}
-            />
+          {/* Password field */}
+          <div style={{ marginBottom: '16px' }}>
+            <label style={labelStyle}>PASSWORD</label>
+            <div style={{ display: 'flex', alignItems: 'center', borderBottom: `1px solid ${THEME.colors.border}` }}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name='password'
+                placeholder='Enter your password'
+                value={form.password}
+                onChange={handleChange}
+                required
+                style={inputStyle}
+              />
+              <button
+                type='button'
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', color: THEME.colors.onSurfaceVariant, display: 'flex', alignItems: 'center' }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                  {showPassword ? 'visibility_off' : 'visibility'}
+                </span>
+              </button>
+            </div>
           </div>
+
+          
 
           <button
             type='submit'
             disabled={loading}
-            style={{ ...components.btnPrimary, width: '100%', display: 'flex' }}
+            style={{ ...components.btnPrimary, width: '100%', display: 'flex', marginTop: '24px' }}
           >
             {loading ? 'SIGNING IN...' : 'SIGN IN →'}
           </button>

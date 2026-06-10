@@ -1,15 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { THEME, typography, components } from '../theme';
 
+const passwordRequirements = [
+  { label: 'At least 6 characters', test: (p) => p.length >= 6 },
+  { label: 'At least one number', test: (p) => /\d/.test(p) },
+  { label: 'At least one uppercase letter', test: (p) => /[A-Z]/.test(p) },
+  { label: 'At least one special character', test: (p) => /[!@#$%^&*(),.?":{}|<>]/.test(p) },
+];
+
 const Signup = () => {
-  const { register } = useAuth();
+  const { register, user } = useAuth();
   const navigate = useNavigate();
   const [method, setMethod] = useState('email');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showRequirements, setShowRequirements] = useState(false);
   const [form, setForm] = useState({
     full_name: '',
     email: '',
@@ -18,13 +28,20 @@ const Signup = () => {
     confirmPassword: '',
   });
 
+  useEffect(() => {
+    if (user) navigate('/');
+  }, [user, navigate]);
+
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const allRequirementsMet = passwordRequirements.every(req => req.test(form.password));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     if (method === 'email' && !form.email) { setError('Please enter your email address'); return; }
     if (method === 'phone' && !form.phone) { setError('Please enter your phone number'); return; }
+    if (!allRequirementsMet) { setError('Password does not meet requirements'); return; }
     if (form.password !== form.confirmPassword) { setError('Passwords do not match'); return; }
     setLoading(true);
     try {
@@ -46,10 +63,9 @@ const Signup = () => {
   };
 
   const inputStyle = {
-    width: '100%',
+    flex: 1,
     backgroundColor: 'transparent',
     border: 'none',
-    borderBottom: `1px solid ${THEME.colors.border}`,
     padding: '12px 0',
     fontFamily: "'DM Sans', sans-serif",
     fontSize: '16px',
@@ -63,6 +79,12 @@ const Signup = () => {
     color: THEME.colors.onSurfaceVariant,
     display: 'block',
     marginBottom: '8px',
+  };
+
+  const wrapperStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    borderBottom: `1px solid ${THEME.colors.border}`,
   };
 
   return (
@@ -99,18 +121,12 @@ const Signup = () => {
               type='button'
               onClick={() => setMethod(m)}
               style={{
-                flex: 1,
-                padding: '12px',
-                border: 'none',
+                flex: 1, padding: '12px', border: 'none',
                 backgroundColor: method === m ? '#000' : 'transparent',
                 color: method === m ? '#fff' : THEME.colors.onSurfaceVariant,
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: '12px',
-                fontWeight: 700,
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
+                fontFamily: "'DM Sans', sans-serif", fontSize: '12px',
+                fontWeight: 700, letterSpacing: '0.1em',
+                textTransform: 'uppercase', cursor: 'pointer', transition: 'all 0.2s',
               }}
             >
               {m.toUpperCase()}
@@ -122,87 +138,141 @@ const Signup = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            style={{
-              backgroundColor: '#ffdad6',
-              color: '#93000a',
-              padding: '12px 16px',
-              fontSize: '13px',
-              fontFamily: "'DM Sans', sans-serif",
-              marginBottom: '24px',
-              border: '1px solid #ffb4ab',
-            }}
+            style={{ backgroundColor: '#ffdad6', color: '#93000a', padding: '12px 16px', fontSize: '13px', fontFamily: "'DM Sans', sans-serif", marginBottom: '24px', border: '1px solid #ffb4ab' }}
           >
             {error}
           </motion.div>
         )}
 
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+
+          {/* Email or Phone */}
           <div>
-            <label style={labelStyle}>
-              {method === 'email' ? 'EMAIL ADDRESS' : 'PHONE NUMBER'}
-            </label>
-            <input
-              type={method === 'email' ? 'email' : 'text'}
-              name={method === 'email' ? 'email' : 'phone'}
-              placeholder={method === 'email' ? 'john@email.com' : '07XXXXXXXX'}
-              value={method === 'email' ? form.email : form.phone}
-              onChange={handleChange}
-              required
-              style={inputStyle}
-              onFocus={e => e.target.style.borderBottomColor = '#000'}
-              onBlur={e => e.target.style.borderBottomColor = THEME.colors.border}
-            />
+            <label style={labelStyle}>{method === 'email' ? 'EMAIL ADDRESS' : 'PHONE NUMBER'}</label>
+            <div style={wrapperStyle}>
+              <input
+                type={method === 'email' ? 'email' : 'text'}
+                name={method === 'email' ? 'email' : 'phone'}
+                placeholder={method === 'email' ? 'john@email.com' : '07XXXXXXXX'}
+                value={method === 'email' ? form.email : form.phone}
+                onChange={handleChange}
+                required
+                style={inputStyle}
+              />
+            </div>
           </div>
 
+          {/* Full name */}
           <div>
             <label style={labelStyle}>FULL NAME</label>
-            <input
-              type='text'
-              name='full_name'
-              placeholder='John Kamau'
-              value={form.full_name}
-              onChange={handleChange}
-              required
-              style={inputStyle}
-              onFocus={e => e.target.style.borderBottomColor = '#000'}
-              onBlur={e => e.target.style.borderBottomColor = THEME.colors.border}
-            />
+            <div style={wrapperStyle}>
+              <input
+                type='text'
+                name='full_name'
+                placeholder='John Kamau'
+                value={form.full_name}
+                onChange={handleChange}
+                required
+                style={inputStyle}
+              />
+            </div>
           </div>
 
+          {/* Password */}
           <div>
             <label style={labelStyle}>PASSWORD</label>
-            <input
-              type='password'
-              name='password'
-              placeholder='At least 6 characters'
-              value={form.password}
-              onChange={handleChange}
-              required
-              style={inputStyle}
-              onFocus={e => e.target.style.borderBottomColor = '#000'}
-              onBlur={e => e.target.style.borderBottomColor = THEME.colors.border}
-            />
+            <div style={wrapperStyle}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name='password'
+                placeholder='At least 6 characters'
+                value={form.password}
+                onChange={handleChange}
+                onFocus={() => setShowRequirements(true)}
+                onBlur={() => setShowRequirements(false)}
+                required
+                style={inputStyle}
+              />
+              <button
+                type='button'
+                onClick={() => setShowPassword(!showPassword)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', color: THEME.colors.onSurfaceVariant, display: 'flex', alignItems: 'center' }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                  {showPassword ? 'visibility_off' : 'visibility'}
+                </span>
+              </button>
+            </div>
+
+            {/* Password requirements */}
+            {(showRequirements || form.password.length > 0) && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                style={{ backgroundColor: THEME.colors.surfaceContainerLow, padding: '12px 16px', marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}
+              >
+                {passwordRequirements.map((req, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '14px', color: req.test(form.password) ? '#2ecc71' : '#c4c7c7' }}>
+                      {req.test(form.password) ? 'check_circle' : 'radio_button_unchecked'}
+                    </span>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: req.test(form.password) ? THEME.colors.onSurface : THEME.colors.onSurfaceVariant }}>
+                      {req.label}
+                    </span>
+                  </div>
+                ))}
+              </motion.div>
+            )}
           </div>
 
+          {/* Confirm Password */}
           <div>
             <label style={labelStyle}>CONFIRM PASSWORD</label>
-            <input
-              type='password'
-              name='confirmPassword'
-              placeholder='Repeat your password'
-              value={form.confirmPassword}
-              onChange={handleChange}
-              required
-              style={inputStyle}
-              onFocus={e => e.target.style.borderBottomColor = '#000'}
-              onBlur={e => e.target.style.borderBottomColor = THEME.colors.border}
-            />
+            <div style={wrapperStyle}>
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                name='confirmPassword'
+                placeholder='Repeat your password'
+                value={form.confirmPassword}
+                onChange={handleChange}
+                required
+                style={inputStyle}
+              />
+              <button
+                type='button'
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', color: THEME.colors.onSurfaceVariant, display: 'flex', alignItems: 'center' }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>
+                  {showConfirmPassword ? 'visibility_off' : 'visibility'}
+                </span>
+              </button>
+            </div>
+
+            {/* Passwords match indicator */}
+            {form.confirmPassword.length > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '14px', color: form.password === form.confirmPassword ? '#2ecc71' : '#ba1a1a' }}>
+                  {form.password === form.confirmPassword ? 'check_circle' : 'cancel'}
+                </span>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: '12px', color: form.password === form.confirmPassword ? '#2ecc71' : '#ba1a1a' }}>
+                  {form.password === form.confirmPassword ? 'Passwords match' : 'Passwords do not match'}
+                </span>
+              </div>
+            )}
           </div>
 
           <button
             type='submit'
-            disabled={loading}
-            style={{ ...components.btnPrimary, width: '100%', display: 'flex', marginTop: '16px' }}
+            disabled={loading || !allRequirementsMet}
+            style={{
+              ...components.btnPrimary,
+              width: '100%',
+              display: 'flex',
+              marginTop: '8px',
+              opacity: !allRequirementsMet ? 0.5 : 1,
+              cursor: !allRequirementsMet ? 'not-allowed' : 'pointer',
+            }}
           >
             {loading ? 'CREATING ACCOUNT...' : 'CREATE ACCOUNT →'}
           </button>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -56,6 +56,14 @@ const Checkout = () => {
   const { isMobile } = useResponsive();
   const [loading, setLoading] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState('delivery');
+
+
+  useEffect(() => {
+  if (!user) {
+    navigate('/login?next=checkout');
+  }
+ }, [user, navigate]);
+
   const [form, setForm] = useState({
     full_name: user?.full_name || '',
     email: user?.email || '',
