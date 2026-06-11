@@ -1,0 +1,5 @@
+INFO 2026-06-11 08:31:12,740 autoreload 33164 130881563914368 Watching for file changes with StatReloader
+INFO 2026-06-11 08:32:25,300 autoreload 33164 130881563914368 /home/lucky/Lux fashion/accounts/views.py changed, reloading.
+INFO 2026-06-11 08:32:26,720 autoreload 33585 132680084930688 Watching for file changes with StatReloader
+INFO 2026-06-11 08:36:22,024 autoreload 33585 132680084930688 /home/lucky/Lux fashion/mpesa/views.py changed, reloading.
+INFO 2026-06-11 08:36:23,631 autoreload 34602 138054915113088 Watching for file changes with StatReloader

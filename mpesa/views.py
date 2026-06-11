@@ -1,3 +1,4 @@
+import logging
 import json
 from django.conf import settings
 from rest_framework.views import APIView
@@ -6,9 +7,13 @@ from rest_framework import status
 from .models import MpesaTransaction
 from .utils import initiate_stk_push
 from orders.models import Order
+from core.throttles import MpesaRateThrottle
 
+logger = logging.getLogger('mpesa')
 
 class STKPushView(APIView):
+    throttle_classes = [MpesaRateThrottle]
+
     def post(self, request):
         phone_number = request.data.get('phone_number')
         order_id = request.data.get('order_id')
@@ -28,6 +33,7 @@ class STKPushView(APIView):
             )
 
         amount = order.total_price
+        logger.info(f'Initiating STK push for Order ID: {order_id}, Phone: {phone_number}')
 
         try:
             response = initiate_stk_push(phone_number, amount, order_id)
@@ -60,12 +66,13 @@ class STKPushView(APIView):
 class MpesaCallbackView(APIView):
     def post(self, request):
         data = request.data
-        
+
         try:
             stk_callback = data['Body']['stkCallback']
             checkout_request_id = stk_callback['CheckoutRequestID']
             result_code = stk_callback['ResultCode']
             result_description = stk_callback['ResultDesc']
+            logger.info(f'M-Pesa callback received for {checkout_request_id} — status: {result_code}')
 
             transaction = MpesaTransaction.objects.get(
                 checkout_request_id=checkout_request_id

@@ -42,7 +42,7 @@ const Shop = () => {
           animate={{ opacity: 1, y: 0 }}
           style={{ ...typography.labelSm, color: THEME.colors.secondary, marginBottom: '8px' }}
         >
-          NAIROBI COLLECTIONS
+          KENYA COLLECTIONS
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
