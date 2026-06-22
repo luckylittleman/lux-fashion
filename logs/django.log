@@ -3,3 +3,23 @@ INFO 2026-06-11 08:32:25,300 autoreload 33164 130881563914368 /home/lucky/Lux fa
 INFO 2026-06-11 08:32:26,720 autoreload 33585 132680084930688 Watching for file changes with StatReloader
 INFO 2026-06-11 08:36:22,024 autoreload 33585 132680084930688 /home/lucky/Lux fashion/mpesa/views.py changed, reloading.
 INFO 2026-06-11 08:36:23,631 autoreload 34602 138054915113088 Watching for file changes with StatReloader
+INFO 2026-06-18 12:52:23,630 autoreload 16760 126243774283904 Watching for file changes with StatReloader
+INFO 2026-06-18 12:52:43,164 autoreload 16760 126243774283904 /home/lucky/Lux fashion/core/settings.py changed, reloading.
+INFO 2026-06-18 12:52:44,052 autoreload 16953 137407616143488 Watching for file changes with StatReloader
+INFO 2026-06-22 11:45:02,814 autoreload 42055 132898639429760 Watching for file changes with StatReloader
+WARNING 2026-06-22 11:45:24,857 log 42055 132898543892160 Not Found: /
+WARNING 2026-06-22 11:45:24,860 log 42055 132898543892160 "GET / HTTP/1.1" 404 2950
+INFO 2026-06-22 11:45:47,191 log 42055 132898543892160 "GET /lux-manage-2026/ HTTP/1.1" 302 0
+INFO 2026-06-22 11:45:47,272 log 42055 132898543892160 "GET /lux-manage-2026/login/?next=/lux-manage-2026/ HTTP/1.1" 200 4117
+INFO 2026-06-22 11:45:47,370 log 42055 132898543892160 "GET /static/admin/css/base.css HTTP/1.1" 304 0
+INFO 2026-06-22 11:45:47,377 log 42055 132898517665472 "GET /static/admin/css/login.css HTTP/1.1" 304 0
+INFO 2026-06-22 11:45:47,378 log 42055 132898526058176 "GET /static/admin/css/nav_sidebar.css HTTP/1.1" 304 0
+INFO 2026-06-22 11:45:47,378 log 42055 132898534450880 "GET /static/admin/css/dark_mode.css HTTP/1.1" 304 0
+INFO 2026-06-22 11:45:47,382 log 42055 132898166404800 "GET /static/admin/js/theme.js HTTP/1.1" 304 0
+INFO 2026-06-22 11:45:47,382 log 42055 132898158012096 "GET /static/admin/css/responsive.css HTTP/1.1" 304 0
+INFO 2026-06-22 11:45:47,423 log 42055 132898158012096 "GET /static/admin/js/nav_sidebar.js HTTP/1.1" 304 0
+INFO 2026-06-22 11:46:08,866 log 42055 132898158012096 "POST /lux-manage-2026/login/?next=/lux-manage-2026/ HTTP/1.1" 302 0
+INFO 2026-06-22 11:46:08,951 log 42055 132898158012096 "GET /lux-manage-2026/ HTTP/1.1" 200 12516
+INFO 2026-06-22 11:46:09,050 log 42055 132898158012096 "GET /static/admin/css/dashboard.css HTTP/1.1" 200 441
+INFO 2026-06-22 11:46:09,109 log 42055 132898158012096 "GET /static/admin/img/icon-addlink.svg HTTP/1.1" 200 593
+INFO 2026-06-22 11:46:09,117 log 42055 132898166404800 "GET /static/admin/img/icon-changelink.svg HTTP/1.1" 200 978
