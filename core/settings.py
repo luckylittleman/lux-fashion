@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'orders',
     'accounts',
     'mpesa',
+    'dashboard',
 ]
 
 MIDDLEWARE = [

@@ -9,4 +9,5 @@ urlpatterns = [
     path('api/orders/', include('orders.urls')),
     path('api/accounts/', include('accounts.urls')),
     path('api/mpesa/', include('mpesa.urls')),
+    path('api/dashboard/', include('dashboard.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
