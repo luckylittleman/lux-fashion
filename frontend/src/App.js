@@ -15,6 +15,9 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Profile from './pages/Profile';
 import ProductDetail from './pages/ProductDetail';
+import Dashboard from './pages/Dashboard';
+import ProtectedRoute from './components/ProtectedRoute';
+
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
